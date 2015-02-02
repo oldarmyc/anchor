@@ -15,4 +15,5 @@ requests
 isoweek
 flask-classy
 flask-restful
+celery
 pygments
