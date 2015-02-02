@@ -1,0 +1,61 @@
+
+.host-id {
+    font-weight: normal;
+}
+
+.dl-horizontal dt {
+    width: 98px;
+}
+
+dt {
+    font-weight: 500;
+}
+
+.dl-horizontal dd {
+    margin-left: 120px;
+}
+
+.host-odd {
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.host-even {
+    padding: 9px;
+    margin: 5px 0;
+}
+
+.host-even {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+div.panel-danger .total-label,
+div.panel-success .total-label {
+    font-weight: bold;
+}
+
+div.server-data {
+    padding: 0 20px;
+    float: left;
+}
+
+.server-info {
+    padding: 5px;
+}
+
+div.multiple-servers h5 {
+    font-weight: bold;
+}
+
+div.multiple-servers h5 .host-id {
+    color: #c7254e;
+}
+
+div.multiple-servers .server-info {
+    background-color: #f9efef;
+}
+
+div.single-server {
+    display: none;
+}

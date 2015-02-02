@@ -1,0 +1,71 @@
+{% extends "_base.html" %}
+{% block title %} - Manage Regions{% endblock %}
+{% block addHeaders %}
+{% endblock %}
+{% block body %}
+	<h1>Manage Regions</h1>
+    <h4>Setup Region</h4>
+    <form method="POST" action="" class="form-horizontal" id="add_form">
+        {{ form.hidden_tag() }}
+        {% for field in form if field.widget.input_type not in ['hidden', 'submit'] %}
+            <div class="form-group{% if field.errors %} has-error has-feedback{% endif %}" id="{{ field.name }}_top">
+                {{ field.label(class="col-sm-1 control-label") }}
+                <div class="col-xs-3">
+                    {% include '_form_fields.html' %}
+                </div>
+            </div>
+        {% endfor %}
+        <div class="form-group">
+            <div class="col-sm-offset-1 col-xs-2">
+                {% for field in form if (field.widget.input_type == 'submit') %}
+                    {{ field(class="btn btn-primary") }}
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+    <h4>Current Regions</h4>
+    {% if settings and settings.get('regions') %}
+        <table class="table table-hover table-condensed" style="width: 600px">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="center">Abbreviation</th>
+					<th class="center">Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for region in settings.get('regions') %}
+                    <tr>
+                        <td>
+                            {{ region.get('name') }}
+                        </td>
+                        <td class="center">
+                            {{ region.get('abbreviation') }}
+                        </td>
+                        <td class="center">
+                            {%- if region.get('active') %}
+								<a href="/manage/regions/deactivate/{{ region.get('abbreviation') }}" class="tooltip-title" title="Deactivate Region"><i class="fa fa-check default-cursor"></i></a>
+							{% else %}
+								<a href="/manage/regions/activate/{{ region.get('abbreviation') }}" class="tooltip-title" title="Activate Region"><i class="fa fa-ban default-cursor"></i>
+							{% endif -%}
+                        </td>
+                        <td>
+                           <a href="/manage/regions/remove/{{ region.get('abbreviation') }}" class="tooltip-title" title="Remove Region"><span class="fa fa-trash-o"></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>There are currently no Regions setup in the system</p>
+    {% endif %}
+
+{% endblock %}
+{% block jquery %}
+    <script>
+        $(document).ready(function() {
+            $('.tooltip-title').tooltip();
+        });
+    </script>
+{% endblock %}

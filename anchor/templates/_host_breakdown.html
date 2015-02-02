@@ -1,0 +1,78 @@
+<h2>
+    {{ data.get('region') }} - Host Server Breakdown
+    <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center</button>
+    {%- if mismatch %}
+        <button class="btn btn-info show-all" title="Show All Servers">Show All Servers</button>
+    {% endif -%}
+</h2>
+{%- if data.get('servers') and data.get('servers')|length > 0 %}
+    {%- if mismatch %}
+        <div class="panel panel-danger" style="width: 50%;">
+            <div class="panel-body text-danger">
+    {% else %}
+        <div class="panel panel-success" style="width: 50%;">
+            <div class="panel-body text-success">
+    {% endif -%}
+            <div class="server-data"><span class="total-label">Total Servers: </span>{{ data.get('servers')|length }}</div>
+            <div class="server-data"><span class="total-label">Total Hosts: </span>{{ data.get('host_servers')|length }}</div>
+        </div>
+    </div>
+    {% set servers = get_formatted_server_list(data) %}
+    {% for host, items in servers.iteritems() %}
+        <div class="{{ loop.cycle('host-even', 'host-odd') }}{%- if items|length > 1 %} multiple-servers{% elif mismatch %} single-server{% endif-%}">
+            <h5>Host Server ID:
+                <span class="host-id">{{ host }}</span>
+            </h5>
+            {% for item in items %}
+                <dl class="dl-horizontal server-info">
+                    <dt>Server Name:</dt>
+                    <dd>{{ item.get('name') }}</dd>
+                    <dt>Server ID:</dt>
+                    <dd>{{ item.get('id') }}</dd>
+                    <dt>Status:</dt>
+                    <dd>{{ item.get('state') }}</dd>
+                    <dt>Flavor:</dt>
+                    <dd>{{ item.get('flavor') }}</dd>
+                    <dt>Public IPs:</dt>
+                    {%- if item.get('public') %}
+                        {% for ip in item.get('public') %}
+                            <dd>{{ ip }}</dd>
+                        {% endfor %}
+                    {% else %}
+                        <dd>-</dd>
+                    {% endif -%}
+                    <dt>Private IPs:</dt>
+                    {%- if item.get('private') %}
+                        {% for ip in item.get('private') %}
+                            <dd>{{ ip }}</dd>
+                        {% endfor %}
+                    {% else %}
+                        <dd>-</dd>
+                    {% endif -%}
+                    <dt>Created:</dt>
+                    <dd>{{ display_date(item.get('created')) }}</dd>
+                    <dt>Server Age:</dt>
+                    <dd>{{ generate_server_age(item.get('created')) }}</dd>
+                </dl>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="panel panel-warning" style="width: 50%;">
+        <div class="panel-body text-warning">You do not have any servers located in this datacenter, or no servers were returned with the query</div>
+    </div>
+{% endif -%}
+<script>
+    $('.lookup-button').on('click', function() {
+        $('#lookup').modal('show');
+    });
+
+    $('.show-all').on('click', function() {
+        $('.single-server').toggle();
+        if ($('.single-server').is(':visible')) {
+            change_button_text('show-all', 'Hide Single Servers', 'warning', 'info');
+        } else {
+            change_button_text('show-all', 'Show All Servers', 'info', 'warning');
+        }
+    });
+</script>

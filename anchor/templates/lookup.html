@@ -1,0 +1,118 @@
+{% extends "_base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block addHeaders %}
+    <link href="{{ url_for('static', filename='css/lookup.css') }}" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    <div id="dynamic_content">
+        <h2>
+            Host Server Breakdown
+            <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center</button>
+        </h2>
+    </div>
+    <div id="lookup" class="modal fade" aria-labelledby="LookupForm" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4>Select Datacenter</h4>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" class="form-horizontal" id="lookup_form">
+                        {{ form.hidden_tag() }}
+                        {% for field in form if field.widget.input_type not in ['hidden', 'submit'] %}
+                            <div class="form-group{% if field.errors %} has-error has-feedback{% endif %}" id="{{ field.name }}_top">
+                                {{ field.label(class="col-sm-4 control-label") }}
+                                <div class="col-xs-7">
+                                    {% include '_form_fields.html' %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary lookup-submit" id="lookup_form_submit" name="submit" type="submit" form="lookup_form">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block jquery %}
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#lookup').modal('show');
+        });
+
+        $('.lookup-button').on('click', function() {
+            $('#lookup').modal('show');
+        });
+
+        $('#lookup_form_submit').click(function() {
+            $("#lookup_form").unbind('submit').bind('submit', function(e){
+                e.preventDefault();
+                var data = {
+                    data_center: $('#data_center').val()
+                };
+                $.ajax({
+                    url: '/lookup/servers',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    beforeSend: function() {
+                        $('#generated_messages').html('&nbsp;');
+                        change_to_loading_button('lookup-submit', 'Loading Data');
+                    }
+                }).done(function(result) {
+                    if (result.task_id != 'None') {
+                        refresh = setInterval(
+                            poll_for_celery_results,
+                            1500,
+                            result.task_id,
+                            '/lookup/servers/'
+                        );
+                    } else {
+                        reset_button_state('lookup-submit', 'Submit');
+                        $('#lookup').modal('hide');
+                        show_message('There was an issue handing off the task. Please refresh page and try again.', 'error');
+                    }
+                }).fail(function(result) {
+                    reset_button_state('lookup-submit', 'Submit');
+                    $('#lookup').modal('hide');
+                    var message = (
+                        'Query returned no results based on the parameters given'
+                    );
+                    show_message(message, 'error');
+                });
+            });
+        });
+
+        function poll_for_celery_results(task_id, url){
+            $.ajax({
+                url: url + task_id,
+                type: 'GET',
+                contentType: "application/json",
+                success: function(data){
+                    if (data.code === 204 && data.state === 'PENDING') {
+                        // Do Nothing as in a pending state
+                    } else if (data.code === 500) {
+                        clearInterval(refresh);
+                        set_button_info(button_class, error_id, error_text);
+                        show_message('There was an error processing the request. Please retry the retrieval.', 'error');
+                    } else {
+                        clearInterval(refresh);
+                        $('#dynamic_content').html(data);
+                        reset_button_state('lookup-submit', 'Submit');
+                        $('#lookup').modal('hide');
+                    }
+                },
+                error: function() {
+                    clearInterval(refresh);
+                    reset_button_state('lookup-submit', 'Submit');
+                    $('#lookup').modal('hide');
+                    show_message('There was an error processing the request. Please check the data center selected and retry the retrieval.', 'error');
+                }
+            });
+        }
+    </script>
+{% endblock %}
