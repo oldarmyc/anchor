@@ -33,7 +33,7 @@ class Account:
         self.token = data.get('token')
         self.cache_expiration = self.set_expiration()
         self.host_servers = data.get('host_servers')
-        self.region = data.get('region')
+        self.region = data.get('region').lower()
         self.servers = data.get('servers')
 
     def set_expiration(self):
