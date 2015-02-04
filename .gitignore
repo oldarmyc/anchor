@@ -48,3 +48,4 @@ nosetests.xml
 .DS_Store
 config.py
 celery.py
+docs/_build
