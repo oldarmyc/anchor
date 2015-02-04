@@ -17,3 +17,5 @@ flask-classy
 flask-restful
 celery
 pygments
+sphinx
+sphinx_http_domain
