@@ -1,5 +1,5 @@
 <h2>
-    {{ data.get('region') }} - Host Server Breakdown
+    {{ data.get('region')|upper }} - Host Server Breakdown
     <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center</button>
     {%- if mismatch %}
         <button class="btn btn-info show-all" title="Show All Servers">Show All Servers</button>
