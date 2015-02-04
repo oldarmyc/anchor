@@ -1,6 +1,4 @@
-<a href="http://drone.cloud-api.info/github.com/rackerlabs/anchor"><img src="http://drone.cloud-api.info/github.com/rackerlabs/anchor/status.svg?branch=master" /></a>
-
-<a href="https://anchor.readthedocs.org"><img src="https://readthedocs.org/projects/anchor/badge/?version=latest" /></a>
+<a href="http://drone.cloud-api.info/github.com/rackerlabs/anchor"><img src="http://drone.cloud-api.info/github.com/rackerlabs/anchor/status.svg?branch=master" /></a><a href="https://anchor.readthedocs.org"><img src="https://readthedocs.org/projects/anchor/badge/?version=latest" /></a>
 
 anchor
 ========
