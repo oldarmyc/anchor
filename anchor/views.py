@@ -185,14 +185,13 @@ class ManagementView(FlaskView):
 """ API Classes """
 
 
-class AccountAPI(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('region', type=str, location='json')
-        self.reqparse.add_argument('task_id', type=str, location='json')
-        super(AccountAPI, self).__init__()
+class TaskAPI(Resource):
+    def get(self, task_id):
+        return jsonify(task_status=tasks.check_task_state(task_id))
 
-    def get(self, account_id):
+
+class AccountAPI(Resource):
+    def get(self, account_id, region):
         token = helper.check_for_token(request)
         if not token:
             return helper.generate_error(
@@ -213,8 +212,7 @@ class AccountAPI(Resource):
         )
         return jsonify(data=account_data)
 
-    def post(self, account_id):
-        args = self.reqparse.parse_args()
+    def post(self, account_id, region):
         token = helper.check_for_token(request)
         if not token:
             return helper.generate_error(
