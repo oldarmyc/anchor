@@ -57,12 +57,13 @@ def create_app(testing=None):
 
     api.add_resource(
         views.AccountAPI,
-        '/account/<int:account_id>',
+        '/account/<account_id>/<region>',
         endpoint='account'
     )
+    api.add_resource(views.TaskAPI, '/task/<task_id>', endpoint='task')
     api.add_resource(
         views.ServerAPI,
-        '/account/<int:account_id>/server/<server_id>',
+        '/account/<account_id>/<region>/server/<server_id>',
         endpoint='server'
     )
     return app, db
