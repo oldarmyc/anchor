@@ -182,7 +182,6 @@ def check_add_server_to_cache(
     check_duplicate = db.accounts.find_one(
         {'servers.host_id': server_details.get('host_id')}
     )
-    print check_duplicate
     return bool(check_duplicate)
 
 
