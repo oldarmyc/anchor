@@ -60,3 +60,31 @@ def format_server_list_for_web(data):
             send_data[server.get('host_id')] = [server]
 
     return send_data
+
+
+def generate_servers_on_same_host(account_id, region, host_id):
+    data = g.db.accounts.aggregate(
+        [
+            {
+                '$match': {
+                    'account_number': account_id,
+                    'region': region
+                }
+            }, {
+                '$unwind': '$servers'
+            }, {
+                '$match': {
+                    'servers.host_id': host_id
+                }
+            }, {
+                '$project': {
+                    '_id': 0,
+                    'server': {
+                        'name': '$servers.name',
+                        'id': '$servers.id'
+                    }
+                }
+            }
+        ]
+    )
+    return data.get('result')
