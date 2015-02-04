@@ -21,3 +21,5 @@ Contents:
    :maxdepth: 2
 
    api
+
+.. _available on github: https://github.com/rackerlabs/anchor
