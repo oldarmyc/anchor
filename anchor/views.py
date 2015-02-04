@@ -252,12 +252,7 @@ class AccountAPI(Resource):
 
 
 class ServerAPI(Resource):
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('region', type=str, location='json')
-        super(ServerAPI, self).__init__()
-
-    def put(self, account_id, server_id):
+    def put(self, account_id, region, server_id):
         """
             Update the account data with the new server, and return True
             or False as to whether the server is by itself on the hypervisor
@@ -265,7 +260,6 @@ class ServerAPI(Resource):
             host that has another server or by itself. The answer will be
             correct either way
         """
-        args = self.reqparse.parse_args()
         token = helper.check_for_token(request)
         if not token:
             return helper.generate_error(
@@ -273,7 +267,12 @@ class ServerAPI(Resource):
                 401
             )
 
-        account_data = g.db.accounts.find_one({'account_number': account_id})
+        account_data = g.db.accounts.find_one(
+            {
+                'account_number': account_id,
+                'region': region
+            }
+        )
         if not account_data:
             return helper.generate_error(
                 'You must initialize before checking a server',
@@ -289,7 +288,7 @@ class ServerAPI(Resource):
 
         response = tasks.check_add_server_to_cache(
             token,
-            args.region,
+            region,
             account_id,
             server_id,
             account_data
