@@ -20,6 +20,13 @@ is the token that is given to you after authenticating through Rackspace Identit
       "Content-Type": "application/json"
     }
 
+Endpoint
+----
+
+Public endpoint to use for all API calls ::
+
+    https://rscloud.info
+
 
 Initialize
 ----
