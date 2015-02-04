@@ -16,7 +16,7 @@ from flask import (
     g, render_template, request, redirect, url_for, flash, jsonify, session
 )
 from flask.ext.classy import FlaskView, route
-from flask.ext.restful import Resource, reqparse
+from flask.ext.restful import Resource
 from bson.objectid import ObjectId
 from models import Region
 from anchor.adminbp.decorators import check_perms
