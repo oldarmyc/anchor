@@ -294,3 +294,32 @@ class ServerAPI(Resource):
             account_data
         )
         return jsonify(duplicate=response)
+
+    def get(self, account_id, region, server_id):
+        server_data = g.db.accounts.find_one(
+            {
+                'account_number': account_id,
+                'region': region,
+                'servers.id': server_id
+            }, {
+                'servers.$': 1
+            }
+        )
+        if not server_data:
+            return helper.generate_error(
+                'You must initialize before checking a server',
+                400
+            )
+
+        check_host = server_data.get('servers')[0].get('host_id')
+        host_servers = helper.generate_servers_on_same_host(
+            account_id,
+            region,
+            check_host
+        )
+
+        duplicate = False
+        if len(host_servers) > 1:
+            duplicate = True
+
+        return jsonify(duplicate=duplicate, host_servers=host_servers)
