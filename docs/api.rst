@@ -7,6 +7,14 @@ Thus increasing visibility into shared resources in your environment, and showin
 the impact if a host goes down.
 
 
+Endpoint
+----
+
+Public endpoint to use for all API calls ::
+
+    https://rscloud.info
+
+
 API Headers
 -------------
 
@@ -19,13 +27,6 @@ is the token that is given to you after authenticating through Rackspace Identit
       "X-Auth-Token": "CLOUD-AUTH-TOKEN",
       "Content-Type": "application/json"
     }
-
-Endpoint
-----
-
-Public endpoint to use for all API calls ::
-
-    https://rscloud.info
 
 
 Initialize
