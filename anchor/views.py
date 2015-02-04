@@ -202,6 +202,7 @@ class AccountAPI(Resource):
         account_data = g.db.accounts.find_one(
             {
                 'account_number': account_id,
+                'region': region,
                 'cache_expiration': {
                     '$gte': helper.get_timestamp()
                 }
@@ -220,23 +221,14 @@ class AccountAPI(Resource):
                 401
             )
 
-        if args.task_id:
-            return jsonify(task_status=tasks.check_task_state(args.task_id))
-
-        if not args.region:
-            return helper.generate_error(
-                'No region specified',
-                401
-            )
-
         task_id = tasks.generate_account_server_list.delay(
             account_id,
             token,
-            args.region
+            region
         )
         return jsonify(task_id=str(task_id))
 
-    def delete(self, account_id):
+    def delete(self, account_id, region):
         token = helper.check_for_token(request)
         if not token:
             return helper.generate_error(
@@ -245,7 +237,12 @@ class AccountAPI(Resource):
             )
 
         try:
-            g.db.accounts.remove({'account_number': account_id})
+            g.db.accounts.remove(
+                {
+                    'account_number': account_id,
+                    'region': region
+                }
+            )
             return 'Request was successful', 204
         except:
             return helper.generate_error(
