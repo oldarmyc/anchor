@@ -30,7 +30,7 @@ mongo, db = HapPyMongo(config)
 
 
 def generate_server_list(account_number, token, region):
-    exit, all_servers, limit, marker = False, [], 100, None
+    response, exit, all_servers, limit, marker = None, False, [], 100, None
     headers = {
         'X-Auth-Token': token,
         'Content-Type': 'application/json'
