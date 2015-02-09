@@ -92,8 +92,6 @@ class AnchorTests(unittest.TestCase):
         with self.app.test_client() as c:
             response = c.get('/')
 
-        print response.data
-
         self.assertEqual(
             response._status_code,
             200,
