@@ -13,6 +13,12 @@
 # limitations under the License.
 
 from flask import Blueprint, g, session
+from defaults import check_and_initialize
+from operator import itemgetter
+
+
+import permissions
+import re
 
 
 bp = Blueprint(
@@ -24,12 +30,6 @@ bp = Blueprint(
 )
 
 
-from defaults import check_and_initialize
-from operator import itemgetter
-
-
-import permissions
-import re
 import views  # noqa
 
 
