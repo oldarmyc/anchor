@@ -200,6 +200,9 @@ class AnchorTests(unittest.TestCase):
 
     def test_api_get_account(self):
         self.setup_useable_account()
+        headers = {
+            "X-Auth-Token": uuid.uuid4().hex
+        }
         check_data = {
             'servers': [
                 {
@@ -223,7 +226,12 @@ class AnchorTests(unittest.TestCase):
             ]
         }
         with self.app.test_client() as c:
-            response = c.get('/account/123456/iad')
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.get(
+                    '/account/123456/iad',
+                    headers=headers
+                )
 
         check = json.loads(response.data)
         assert check_data == check.get('data'), (
@@ -232,8 +240,16 @@ class AnchorTests(unittest.TestCase):
 
     def test_api_get_account_no_data(self):
         self.setup_useable_account(True)
+        headers = {
+            "X-Auth-Token": uuid.uuid4().hex
+        }
         with self.app.test_client() as c:
-            response = c.get('/account/123456/iad')
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.get(
+                    '/account/123456/iad',
+                    headers=headers
+                )
 
         check = json.loads(response.data)
         print check
@@ -271,10 +287,19 @@ class AnchorTests(unittest.TestCase):
 
     def test_api_post_account_no_token(self):
         with self.app.test_client() as c:
-            response = c.post('/account/123456/iad')
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = False
+                response = c.post('/account/123456/iad')
 
         assert response._status_code == 401, (
             'Incorrect status code recieved on post with no token'
+        )
+        check_data = json.loads(response.data)
+        self.assertEquals(
+            check_data.get('message'),
+            'No authentication token provided, or '
+            'authentication was unsuccessful',
+            'Incorrect message received'
         )
         accounts = self.db.accounts.count()
         assert accounts == 0, 'Incorrect account count'
@@ -284,10 +309,12 @@ class AnchorTests(unittest.TestCase):
             "X-Auth-Token": uuid.uuid4().hex
         }
         with self.app.test_client() as c:
-            response = c.post(
-                '/account/123456/iad',
-                headers=headers
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.post(
+                    '/account/123456/iad',
+                    headers=headers
+                )
 
         check_data = json.loads(response.data)
         assert check_data.get('task_id'), (
@@ -298,15 +325,21 @@ class AnchorTests(unittest.TestCase):
 
     def test_api_get_server(self):
         self.setup_useable_account()
+        headers = {
+            "X-Auth-Token": uuid.uuid4().hex
+        }
         check_server = {
             'id': '00000000-1111-2222-3333-444444444444',
             'name': 'test-server'
         }
         with self.app.test_client() as c:
-            response = c.get(
-                '/account/123456/iad/server/'
-                '00000000-1111-2222-3333-444444444444'
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.get(
+                    '/account/123456/iad/server/'
+                    '00000000-1111-2222-3333-444444444444',
+                    headers=headers
+                )
 
         check_data = json.loads(response.data)
         assert check_data.get('duplicate') is False, (
@@ -319,21 +352,33 @@ class AnchorTests(unittest.TestCase):
         assert server_data == check_server, 'Incorrect server data returned'
 
     def test_api_get_server_not_found(self):
+        headers = {
+            "X-Auth-Token": uuid.uuid4().hex
+        }
         with self.app.test_client() as c:
-            response = c.get(
-                '/account/123456/iad/server/'
-                '00000000-1111-2222-3333-444444444444'
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.get(
+                    '/account/123456/iad/server/'
+                    '00000000-1111-2222-3333-444444444444',
+                    headers=headers
+                )
 
         assert response._status_code == 404, 'Invalid status code received'
 
     def test_api_get_server_duplicate(self):
+        headers = {
+            "X-Auth-Token": uuid.uuid4().hex
+        }
         self.setup_useable_duplicate_servers_for_account()
         with self.app.test_client() as c:
-            response = c.get(
-                '/account/123456/iad/server/'
-                '00000000-1111-2222-3333-444444444444'
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.get(
+                    '/account/123456/iad/server/'
+                    '00000000-1111-2222-3333-444444444444',
+                    headers=headers
+                )
 
         check_data = json.loads(response.data)
         assert check_data.get('duplicate') is True, (
@@ -343,6 +388,27 @@ class AnchorTests(unittest.TestCase):
             'Incorrect number of servers returned for host'
         )
 
+    def test_api_get_server_no_token(self):
+        self.setup_useable_account()
+        with self.app.test_client() as c:
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = False
+                response = c.get(
+                    '/account/123456/iad/server/'
+                    '00000000-1111-2222-3333-444444444444',
+                )
+
+        assert response._status_code == 401, (
+            'Incorrect status code recieved on put with no token'
+        )
+        check_data = json.loads(response.data)
+        self.assertEquals(
+            check_data.get('message'),
+            'No authentication token provided, or '
+            'authentication was unsuccessful',
+            'Incorrect message received'
+        )
+
     def test_api_put_server(self):
         self.setup_useable_account()
         use_uuid = uuid.uuid4().hex
@@ -350,12 +416,16 @@ class AnchorTests(unittest.TestCase):
             "X-Auth-Token": uuid.uuid4().hex
         }
         with self.app.test_client() as c:
-            with mock.patch('anchor.tasks.check_add_server_to_cache') as cache:
-                cache.return_value = False
-                response = c.put(
-                    '/account/123456/iad/server/%s' % use_uuid,
-                    headers=headers
-                )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                with mock.patch(
+                    'anchor.tasks.check_add_server_to_cache'
+                ) as cache:
+                    cache.return_value = False
+                    response = c.put(
+                        '/account/123456/iad/server/%s' % use_uuid,
+                        headers=headers
+                    )
 
         check_data = json.loads(response.data)
         assert check_data.get('duplicate') is False, 'Incorrect return value'
@@ -367,21 +437,17 @@ class AnchorTests(unittest.TestCase):
             "X-Auth-Token": uuid.uuid4().hex
         }
         with self.app.test_client() as c:
-            response = c.put(
-                '/account/123456/iad/server/%s' % use_uuid,
-                headers=headers
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.put(
+                    '/account/123456/iad/server/%s' % use_uuid,
+                    headers=headers
+                )
 
         assert response._status_code == 400, (
             'Incorrect status code recieved on put no initialization'
         )
         check_data = json.loads(response.data)
-
-        print check_data
-
-        account = self.db.accounts.find_one()
-        print account.get('cache_expiration')
-
         self.assertEquals(
             check_data.get('message'),
             'Server has been catalogued already',
@@ -396,10 +462,12 @@ class AnchorTests(unittest.TestCase):
             "X-Auth-Token": uuid.uuid4().hex
         }
         with self.app.test_client() as c:
-            response = c.put(
-                '/account/123456/iad/server/%s' % use_uuid,
-                headers=headers
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = True
+                response = c.put(
+                    '/account/123456/iad/server/%s' % use_uuid,
+                    headers=headers
+                )
 
         assert response._status_code == 400, (
             'Incorrect status code recieved on put no initialization'
@@ -417,9 +485,11 @@ class AnchorTests(unittest.TestCase):
         use_uuid = uuid.uuid4().hex
         self.setup_useable_account()
         with self.app.test_client() as c:
-            response = c.put(
-                '/account/123456/iad/server/%s' % use_uuid
-            )
+            with mock.patch('anchor.tasks.check_auth_token') as ctoken:
+                ctoken.return_value = False
+                response = c.put(
+                    '/account/123456/iad/server/%s' % use_uuid
+                )
 
         assert response._status_code == 401, (
             'Incorrect status code recieved on put with no token'
@@ -427,7 +497,8 @@ class AnchorTests(unittest.TestCase):
         check_data = json.loads(response.data)
         self.assertEquals(
             check_data.get('message'),
-            'No authentication token provided',
+            'No authentication token provided, or '
+            'authentication was unsuccessful',
             'Incorrect message received'
         )
         accounts = self.db.accounts.find_one()

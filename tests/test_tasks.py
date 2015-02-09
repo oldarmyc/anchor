@@ -525,3 +525,57 @@ class AnchorCeleryTests(unittest.TestCase):
         assert len(account.get('servers')) == 0, (
             'Host servers listed when there should not have been'
         )
+
+    def test_celery_check_token(self):
+        cloud_return = {
+            'users': [
+                {
+                    'RAX-AUTH:domainId': '123456',
+                    'username': 'bob.richards',
+                    'enabled': True,
+                    'email': 'bob.richards@rackspace.com',
+                    'RAX-AUTH:defaultRegion': 'ORD',
+                    'RAX-AUTH:multiFactorEnabled': False,
+                    'id': '11111111'
+                }
+            ]
+        }
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('requests.get') as patched_get:
+                    patched_get.return_value.content = json.dumps(cloud_return)
+                    patched_get.return_value._status_code = 200
+                    task = self.tasks.check_auth_token(
+                        '123456',
+                        uuid.uuid4().hex,
+                    )
+
+        assert task is True, 'Incorrect status returned with check'
+
+    def test_celery_check_token_error(self):
+        cloud_return = None
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('requests.get') as patched_get:
+                    error = patched_get.side_effect = ValueError
+                    patched_get.return_value = error
+                    task = self.tasks.check_auth_token(
+                        '123456',
+                        uuid.uuid4().hex,
+                    )
+
+        assert task is False, 'Incorrect status returned with check'
