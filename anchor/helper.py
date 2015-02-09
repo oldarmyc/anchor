@@ -45,7 +45,7 @@ def gather_dc_choices():
     if settings.get('regions') and len(settings.get('regions')) > 0:
         choices = [
             (
-                dc.get('abbreviation'), dc.get('abbreviation')
+                dc.get('abbreviation').lower(), dc.get('abbreviation')
             ) for dc in settings.get('regions') if dc.get('active')
         ]
     return choices
