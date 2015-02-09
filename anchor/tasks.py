@@ -146,13 +146,19 @@ def generate_account_server_list(account_number, token, region, web=None):
     }
     store_account = Account(data)
     db.accounts.update(
-        {'account_number': store_account.account_number},
+        {
+            'account_number': store_account.account_number,
+            'region': region
+        },
         store_account.__dict__,
         upsert=True
     )
     if web:
         account_data = db.accounts.find_one(
-            {'account_number': store_account.account_number}
+            {
+                'account_number': store_account.account_number,
+                'region': region
+            }
         )
         return str(account_data.get('_id'))
     return
