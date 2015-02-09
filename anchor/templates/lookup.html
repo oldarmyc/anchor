@@ -97,7 +97,8 @@
                         // Do Nothing as in a pending state
                     } else if (data.code === 500) {
                         clearInterval(refresh);
-                        set_button_info(button_class, error_id, error_text);
+                        reset_button_state('lookup-submit', 'Submit');
+                        $('#lookup').modal('hide');
                         show_message('There was an error processing the request. Please retry the retrieval.', 'error');
                     } else {
                         clearInterval(refresh);
