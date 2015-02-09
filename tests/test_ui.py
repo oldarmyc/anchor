@@ -19,6 +19,7 @@ from uuid import uuid4
 
 
 import unittest
+import anchor
 import json
 import re
 import mock
@@ -31,6 +32,17 @@ class AnchorTests(unittest.TestCase):
         self.app_context.push()
         self.client = self.app.test_client()
         self.client.get('/')
+
+        self.tasks = anchor.tasks
+        if not re.search('_test', self.tasks.config.MONGO_DATABASE):
+            self.tasks.config.MONGO_DATABASE = (
+                '%s_test' % self.tasks.config.MONGO_DATABASE
+            )
+
+        self.tasks.config.BROKER_URL = 'memory://'
+        self.tasks.config.CELERY_RESULT_BACKEND = 'cache'
+        self.tasks.config.CELERY_CACHE_BACKEND = 'memory'
+        self.tasks.db = self.db
 
     def tearDown(self):
         self.db.sessions.remove()
