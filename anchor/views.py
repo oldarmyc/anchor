@@ -109,12 +109,6 @@ class ManagementView(FlaskView):
                         'ManagementView:define_available_regions'
                     )
                 )
-            else:
-                flash(
-                    'There was an error with the data being setup correctly,'
-                    ' please check the form and try again',
-                    'error'
-                )
         else:
             if request.method == 'POST':
                 flash(
@@ -192,13 +186,6 @@ class TaskAPI(Resource):
 
 class AccountAPI(Resource):
     def get(self, account_id, region):
-        token = helper.check_for_token(request)
-        if not token:
-            return helper.generate_error(
-                'No authentication token provided',
-                401
-            )
-
         account_data = g.db.accounts.find_one(
             {
                 'account_number': account_id,
@@ -229,13 +216,6 @@ class AccountAPI(Resource):
         return jsonify(task_id=str(task_id))
 
     def delete(self, account_id, region):
-        token = helper.check_for_token(request)
-        if not token:
-            return helper.generate_error(
-                'No authentication token provided',
-                401
-            )
-
         try:
             g.db.accounts.remove(
                 {
