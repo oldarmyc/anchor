@@ -178,17 +178,26 @@ def check_add_server_to_cache(
         account_number,
         server_id
     )
-    data = process_server_details(server_details)
-    account_data['servers'].append(data)
-    store_account = Account(account_data)
-    db.accounts.update(
-        {'account_number': store_account.account_number},
-        store_account.__dict__
-    )
-    check_duplicate = db.accounts.find_one(
-        {'servers.host_id': server_details.get('host_id')}
-    )
-    return bool(check_duplicate)
+    if server_details:
+        server_data = process_server_details(server_details)
+        check_duplicate = db.accounts.find_one(
+            {
+                'account_number': account_number,
+                'region': region,
+                'servers.host_id': server_details.get('host_id')
+            }
+        )
+        db.accounts.update(
+            {
+                '_id': account_data.get('_id')
+            }, {
+                '$push': {
+                    'servers': server_data
+                }
+            }
+        )
+        return bool(check_duplicate)
+    return None
 
 
 @celery_app.task
