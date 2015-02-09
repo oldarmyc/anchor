@@ -288,8 +288,8 @@ class ServerAPI(Resource):
         )
         if not server_data:
             return helper.generate_error(
-                'You must initialize before checking a server',
-                400
+                'Server was not found',
+                404
             )
 
         check_host = server_data.get('servers')[0].get('host_id')
