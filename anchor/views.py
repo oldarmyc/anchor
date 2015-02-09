@@ -250,7 +250,8 @@ class ServerAPI(Resource):
         account_data = g.db.accounts.find_one(
             {
                 'account_number': account_id,
-                'region': region
+                'region': region,
+                'cache_expiration': {'$gte': helper.get_timestamp()}
             }
         )
         if not account_data:
