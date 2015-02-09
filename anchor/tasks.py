@@ -97,6 +97,24 @@ def get_server_details(token, region, account_number, server_id):
     return content.get('server')
 
 
+def check_authorized(account_number, token):
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    url = 'https://identity.api.rackspacecloud.com/v2.0/users'
+    try:
+        response = requests.get(url, headers=headers)
+        if response._status_code == 200:
+            return True
+    except Exception as e:
+        logger.error(
+            'An error occured retrieving the server details: %s' % e
+        )
+
+    return False
+
+
 def generate_host_and_server_data(all_servers):
     hosts, servers = [], []
     for server in all_servers:
@@ -198,6 +216,11 @@ def check_add_server_to_cache(
         )
         return bool(check_duplicate)
     return None
+
+
+@celery_app.task
+def check_auth_token(account_number, token):
+    return check_authorized(account_number, token)
 
 
 @celery_app.task
