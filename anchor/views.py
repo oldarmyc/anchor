@@ -186,6 +186,17 @@ class TaskAPI(Resource):
 
 class AccountAPI(Resource):
     def get(self, account_id, region):
+        token = tasks.check_auth_token(
+            account_id,
+            helper.check_for_token(request)
+        )
+        if not token:
+            return helper.generate_error(
+                'No authentication token provided, '
+                'or authentication was unsuccessful',
+                401
+            )
+
         account_data = g.db.accounts.find_one(
             {
                 'account_number': account_id,
@@ -201,10 +212,14 @@ class AccountAPI(Resource):
         return jsonify(data=account_data)
 
     def post(self, account_id, region):
-        token = helper.check_for_token(request)
+        token = tasks.check_auth_token(
+            account_id,
+            helper.check_for_token(request)
+        )
         if not token:
             return helper.generate_error(
-                'No authentication token provided',
+                'No authentication token provided, '
+                'or authentication was unsuccessful',
                 401
             )
 
@@ -240,10 +255,14 @@ class ServerAPI(Resource):
             host that has another server or by itself. The answer will be
             correct either way
         """
-        token = helper.check_for_token(request)
+        token = tasks.check_auth_token(
+            account_id,
+            helper.check_for_token(request)
+        )
         if not token:
             return helper.generate_error(
-                'No authentication token provided',
+                'No authentication token provided, '
+                'or authentication was unsuccessful',
                 401
             )
 
@@ -277,6 +296,17 @@ class ServerAPI(Resource):
         return jsonify(duplicate=response)
 
     def get(self, account_id, region, server_id):
+        token = tasks.check_auth_token(
+            account_id,
+            helper.check_for_token(request)
+        )
+        if not token:
+            return helper.generate_error(
+                'No authentication token provided, '
+                'or authentication was unsuccessful',
+                401
+            )
+
         server_data = g.db.accounts.find_one(
             {
                 'account_number': account_id,
