@@ -30,7 +30,6 @@ class Region:
 class Account:
     def __init__(self, data):
         self.account_number = data.get('account_number')
-        self.token = data.get('token')
         self.cache_expiration = self.set_expiration()
         self.host_servers = data.get('host_servers')
         self.region = data.get('region').lower()
