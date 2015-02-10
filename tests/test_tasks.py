@@ -560,7 +560,6 @@ class AnchorCeleryTests(unittest.TestCase):
         assert task is True, 'Incorrect status returned with check'
 
     def test_celery_check_token_error(self):
-        cloud_return = None
         with self.app.test_client() as c:
             with c.session_transaction() as sess:
                 self.setup_user_login(sess)
