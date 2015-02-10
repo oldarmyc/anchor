@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from flask import (
-    g, render_template, request, redirect, url_for, flash, jsonify, session
+    g, render_template, request, redirect, url_for, flash, jsonify, session,
+    make_response
 )
 from flask.ext.classy import FlaskView, route
 from flask.ext.restful import Resource
@@ -73,10 +74,36 @@ class LookupView(FlaskView):
                 return render_template(
                     '_host_breakdown.html',
                     data=account_data,
-                    mismatch=mismatch
+                    mismatch=mismatch,
+                    task_id=task_id
                 )
 
             return jsonify(state=status, code=500)
+
+    @route('/servers/<task_id>/csv')
+    def generate_server_csv(self, task_id):
+        status = tasks.check_task_state(task_id)
+        if status == 'SUCCESS':
+            account_id = tasks.get_task_results(task_id)
+            account_data = g.db.accounts.find_one(
+                {'_id': ObjectId(account_id)}
+            )
+            template = render_template(
+                'servers.csv',
+                data=account_data
+            )
+            response = make_response(template)
+            response.headers['Content-Type'] = 'application/csv'
+            response.headers['Content-Disposition'] = (
+                'attachment; filename="servers.csv"'
+            )
+            return response
+        else:
+            flash(
+                'Task has not completed yet, so no CSV can be generated',
+                'warning'
+            )
+            return redirect(url_for('BaseView:index'))
 
 
 class ManagementView(FlaskView):
@@ -328,7 +355,6 @@ class ServerAPI(Resource):
             region,
             check_host
         )
-
         duplicate = False
         if len(host_servers) > 1:
             duplicate = True
