@@ -20,6 +20,7 @@ from uuid import uuid4
 
 import unittest
 import anchor
+import urlparse
 import json
 import re
 import mock
@@ -250,4 +251,54 @@ class AnchorTests(unittest.TestCase):
             account.get('region').upper(),
             response.data,
             'Could not find the region in the response'
+        )
+
+    def test_ui_csv_pending_status(self):
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch('anchor.tasks.check_task_state') as data:
+                data.return_value = 'PENDING'
+                response = c.get(
+                    '/lookup/servers/%s/csv' % uuid4().hex
+                )
+
+        assert response._status_code == 302, (
+            'Invalid response code %s' % response._status_code
+        )
+        location = urlparse.urlparse(response.headers.get('Location'))
+        self.assertEqual(
+            location.path,
+            '/',
+            'Invalid redirect location %s, expected "/"' % location.path
+        )
+
+    def test_ui_csv_generate(self):
+        self.setup_useable_account()
+        account = self.db.accounts.find_one()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch('anchor.tasks.check_task_state') as state:
+                state.return_value = 'SUCCESS'
+                with mock.patch('anchor.tasks.get_task_results') as data:
+                    data.return_value = str(account.get('_id'))
+                    response = c.get(
+                        '/lookup/servers/%s/csv' % uuid4().hex
+                    )
+
+        self.assertIn(
+            'Host ID,Server ID,Name,State,Flavor,Public IPs,Private IPs',
+            response.data,
+            'Incorrect headers found in response'
+        )
+        self.assertIn(
+            '"f0ab54576022b02c128b9516ef23a9947c73a8564ca79c7d1debb015",'
+            '"11111111-2222-3333-4444-55566667777","test-server2","active",'
+            '"general1-1","163.163.163.163;2002:2002:2002:102:2002:'
+            '2002:2002:2002","10.10.10.10"',
+            response.data,
+            'Incorrect data returned for CSV'
         )
