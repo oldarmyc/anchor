@@ -29,8 +29,39 @@ celery_app.config_from_object(config)
 mongo, db = HapPyMongo(config)
 
 
+def process_api_request(url, verb, data, headers, status=None):
+    try:
+        """
+        Commenting out as data may be needed so leaving it here
+        if data:
+            response = getattr(requests, verb.lower())(
+                url,
+                headers=headers,
+                data=json.dumps(data),
+                verify=False
+            )
+        else:
+        """
+        response = getattr(requests, verb.lower())(
+            url,
+            headers=headers,
+            verify=False
+        )
+    except Exception as e:
+        logger.error('An error occured executing the API call: %s' % e)
+
+    try:
+        if status:
+            return response._status_code
+
+        return json.loads(response.content)
+    except Exception as e:
+        logger.error('An error occured loading the content: %s' % e)
+        return None
+
+
 def generate_server_list(account_number, token, region):
-    response, exit, all_servers, limit, marker = None, False, [], 100, None
+    exit, all_servers, limit, marker = False, [], 100, None
     headers = {
         'X-Auth-Token': token,
         'Content-Type': 'application/json'
