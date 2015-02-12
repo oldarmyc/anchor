@@ -29,8 +29,39 @@ celery_app.config_from_object(config)
 mongo, db = HapPyMongo(config)
 
 
+def process_api_request(url, verb, data, headers, status=None):
+    try:
+        """
+        Commenting out as data may be needed so leaving it here
+        if data:
+            response = getattr(requests, verb.lower())(
+                url,
+                headers=headers,
+                data=json.dumps(data),
+                verify=False
+            )
+        else:
+        """
+        response = getattr(requests, verb.lower())(
+            url,
+            headers=headers,
+            verify=False
+        )
+    except Exception as e:
+        logger.error('An error occured executing the API call: %s' % e)
+
+    try:
+        if status:
+            return response._status_code
+
+        return json.loads(response.content)
+    except Exception as e:
+        logger.error('An error occured loading the content: %s' % e)
+        return None
+
+
 def generate_server_list(account_number, token, region):
-    response, exit, all_servers, limit, marker = None, False, [], 100, None
+    exit, all_servers, limit, marker = False, [], 100, None
     headers = {
         'X-Auth-Token': token,
         'Content-Type': 'application/json'
@@ -48,16 +79,8 @@ def generate_server_list(account_number, token, region):
         else:
             url = marker
 
-        try:
-            response = requests.get(url, headers=headers)
-            content = json.loads(response.content)
-        except Exception as e:
-            logger.error(
-                'An error occured retrieving the servers: %s - %s' % (
-                    response,
-                    e
-                )
-            )
+        content = process_api_request(url, 'get', None, headers)
+        if not content:
             break
 
         servers = content.get('servers')
@@ -82,16 +105,8 @@ def get_server_details(token, region, account_number, server_id):
         account_number,
         server_id
     )
-    try:
-        response = requests.get(url, headers=headers)
-        content = json.loads(response.content)
-    except Exception as e:
-        logger.error(
-            'An error occured retrieving the server details: %s - %s' % (
-                response,
-                e
-            )
-        )
+    content = process_api_request(url, 'get', None, headers)
+    if not content:
         return None
 
     return content.get('server')
@@ -103,14 +118,9 @@ def check_authorized(account_number, token):
         'Content-Type': 'application/json'
     }
     url = 'https://identity.api.rackspacecloud.com/v2.0/users'
-    try:
-        response = requests.get(url, headers=headers)
-        if response._status_code == 200:
-            return True
-    except Exception as e:
-        logger.error(
-            'An error occured retrieving the server details: %s' % e
-        )
+    status_code = process_api_request(url, 'get', None, headers, True)
+    if status_code == 200:
+        return True
 
     return False
 
