@@ -79,16 +79,8 @@ def generate_server_list(account_number, token, region):
         else:
             url = marker
 
-        try:
-            response = requests.get(url, headers=headers)
-            content = json.loads(response.content)
-        except Exception as e:
-            logger.error(
-                'An error occured retrieving the servers: %s - %s' % (
-                    response,
-                    e
-                )
-            )
+        content = process_api_request(url, 'get', None, headers)
+        if not content:
             break
 
         servers = content.get('servers')
@@ -113,16 +105,8 @@ def get_server_details(token, region, account_number, server_id):
         account_number,
         server_id
     )
-    try:
-        response = requests.get(url, headers=headers)
-        content = json.loads(response.content)
-    except Exception as e:
-        logger.error(
-            'An error occured retrieving the server details: %s - %s' % (
-                response,
-                e
-            )
-        )
+    content = process_api_request(url, 'get', None, headers)
+    if not content:
         return None
 
     return content.get('server')
@@ -134,14 +118,9 @@ def check_authorized(account_number, token):
         'Content-Type': 'application/json'
     }
     url = 'https://identity.api.rackspacecloud.com/v2.0/users'
-    try:
-        response = requests.get(url, headers=headers)
-        if response._status_code == 200:
-            return True
-    except Exception as e:
-        logger.error(
-            'An error occured retrieving the server details: %s' % e
-        )
+    status_code = process_api_request(url, 'get', None, headers, True)
+    if status_code == 200:
+        return True
 
     return False
 
