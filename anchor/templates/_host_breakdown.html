@@ -28,6 +28,10 @@
             </h5>
             {% for item in items %}
                 <dl class="dl-horizontal server-info">
+                    {%- if item.get('reboot_window') %}
+                        <dt class="reboot">Reboot Window:</dt>
+                        <dd class="reboot">{{ process_reboot_data(item.get('reboot_window')) }}</dd>
+                    {% endif -%}
                     <dt>Server Name:</dt>
                     <dd>{{ item.get('name') }}</dd>
                     <dt>Server ID:</dt>
