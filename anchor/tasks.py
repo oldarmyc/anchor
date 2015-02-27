@@ -148,6 +148,7 @@ def process_server_details(server):
             private.append(item.get('addr'))
 
     host_id = server.get('hostId')
+    metadata = server.get('metadata', {})
     data = {
         'state': server.get('OS-EXT-STS:vm_state'),
         'id': server.get('id'),
@@ -156,7 +157,8 @@ def process_server_details(server):
         'created': server.get('created'),
         'flavor': server.get('flavor').get('id'),
         'public': public,
-        'private': private
+        'private': private,
+        'reboot_window': metadata.get('rax:reboot_window')
     }
     return data
 
