@@ -453,7 +453,7 @@ class AnchorCeleryTests(unittest.TestCase):
 
     def test_celery_generate_data(self):
         cloud_return = self.setup_servers_details_return()
-        fg_return = self.setup_fg_servers_details_return()
+        # fg_return = self.setup_fg_servers_details_return()
         with self.app.test_client() as c:
             with c.session_transaction() as sess:
                 self.setup_user_login(sess)
