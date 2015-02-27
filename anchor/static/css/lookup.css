@@ -16,6 +16,11 @@ dd.reboot {
     color: #c7254e;
 }
 
+dt.first-gen,
+dd.first-gen {
+    color: #31708f;
+}
+
 .dl-horizontal dd {
     margin-left: 135px;
 }
