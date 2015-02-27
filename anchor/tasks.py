@@ -187,10 +187,37 @@ def process_server_details(server):
     return data
 
 
+def process_fg_server_details(server):
+    data, public, private = {}, [], []
+    if server.get('addresses').get('public'):
+        for item in server.get('addresses').get('public'):
+            public.append(item)
+
+    if server.get('addresses').get('private'):
+        for item in server.get('addresses').get('private'):
+            private.append(item)
+
+    host_id = server.get('hostId')
+    metadata = server.get('metadata', {})
+    data = {
+        'type': 'fg',
+        'state': server.get('status'),
+        'id': server.get('id'),
+        'host_id': host_id,
+        'name': server.get('name'),
+        'flavor': server.get('flavorId'),
+        'public': public,
+        'private': private,
+        'reboot_window': metadata.get('rax:reboot_window')
+    }
+    return data
+
+
 @celery_app.task
 def generate_account_server_list(account_number, token, region, web=None):
-    all_servers = generate_server_list(account_number, token, region)
-    servers, hosts = generate_host_and_server_data(all_servers)
+    ng_servers = generate_server_list(account_number, token, region)
+    fg_servers = generate_first_gen_server_list(account_number, token, region)
+    servers, hosts = generate_host_and_server_data(ng_servers, fg_servers)
     data = {
         'account_number': account_number,
         'region': region,
