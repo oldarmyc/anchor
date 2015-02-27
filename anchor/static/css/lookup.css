@@ -4,15 +4,20 @@
 }
 
 .dl-horizontal dt {
-    width: 98px;
+    width: 110px;
 }
 
 dt {
     font-weight: 500;
 }
 
+dt.reboot,
+dd.reboot {
+    color: #c7254e;
+}
+
 .dl-horizontal dd {
-    margin-left: 120px;
+    margin-left: 135px;
 }
 
 .host-odd {
