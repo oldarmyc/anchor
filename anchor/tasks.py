@@ -95,6 +95,23 @@ def generate_server_list(account_number, token, region):
     return all_servers
 
 
+def generate_first_gen_server_list(account_number, token, region):
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    url = (
+        'https://servers.api.rackspacecloud.com/v1.0/%s/'
+        'servers/detail' % account_number
+    )
+    content = process_api_request(url, 'get', None, headers)
+    if not content:
+        return []
+
+    servers = content.get('servers')
+    return servers
+
+
 def get_server_details(token, region, account_number, server_id):
     headers = {
         'X-Auth-Token': token,
@@ -125,11 +142,18 @@ def check_authorized(account_number, token):
     return False
 
 
-def generate_host_and_server_data(all_servers):
+def generate_host_and_server_data(ng_servers, fg_servers):
     hosts, servers = [], []
-    for server in all_servers:
+    for server in ng_servers:
         host_id = server.get('hostId')
         data = process_server_details(server)
+        servers.append(data)
+        if host_id not in hosts:
+            hosts.append(host_id)
+
+    for server in fg_servers:
+        host_id = server.get('hostId')
+        data = process_fg_server_details(server)
         servers.append(data)
         if host_id not in hosts:
             hosts.append(host_id)

@@ -1,13 +1,13 @@
 # Copyright 2014 Dave Kludt
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the 'License');
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
+# distributed under the License is distributed on an 'AS IS' BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -362,6 +362,30 @@ class AnchorCeleryTests(unittest.TestCase):
             ]
         }
 
+    def setup_fg_servers_details_return(self):
+        return {
+            'servers': [
+                {
+                    'status': 'ACTIVE',
+                    'hostId': 'caf8f03bb31dbd2d6367615709e853cf',
+                    'name': 'test-server',
+                    'metadata': {},
+                    'imageId': 122,
+                    'progress': 100,
+                    'flavorId': 1,
+                    'id': 12345678,
+                    'addresses': {
+                        'public': [
+                            '111.111.111.111'
+                        ],
+                        'private': [
+                            '11.11.11.11'
+                        ]
+                    }
+                }
+            ]
+        }
+
     def test_celery_add_server_to_cache(self):
         self.setup_useable_account()
         account_data = self.db.accounts.find_one()
@@ -429,6 +453,7 @@ class AnchorCeleryTests(unittest.TestCase):
 
     def test_celery_generate_data(self):
         cloud_return = self.setup_servers_details_return()
+        fg_return = self.setup_fg_servers_details_return()
         with self.app.test_client() as c:
             with c.session_transaction() as sess:
                 self.setup_user_login(sess)
