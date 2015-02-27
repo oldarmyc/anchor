@@ -32,6 +32,10 @@
                         <dt class="reboot">Reboot Window:</dt>
                         <dd class="reboot">{{ process_reboot_data(item.get('reboot_window')) }}</dd>
                     {% endif -%}
+                    {%- if item.get('type') %}
+                        <dt class="first-gen">Server Type:</dt>
+                        <dd class="first-gen">First Generation</dd>
+                    {% endif -%}
                     <dt>Server Name:</dt>
                     <dd>{{ item.get('name') }}</dd>
                     <dt>Server ID:</dt>
@@ -56,10 +60,12 @@
                     {% else %}
                         <dd>-</dd>
                     {% endif -%}
-                    <dt>Created:</dt>
-                    <dd>{{ display_date(item.get('created')) }}</dd>
-                    <dt>Server Age:</dt>
-                    <dd>{{ generate_server_age(item.get('created')) }}</dd>
+                    {%- if item.get('created') %}
+                        <dt>Created:</dt>
+                        <dd>{{ display_date(item.get('created')) }}</dd>
+                        <dt>Server Age:</dt>
+                        <dd>{{ generate_server_age(item.get('created')) }}</dd>
+                    {% endif -%}
                 </dl>
             {% endfor %}
         </div>
