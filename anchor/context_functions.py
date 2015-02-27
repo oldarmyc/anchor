@@ -24,8 +24,10 @@ def utility_processor():
         return re.sub('_', ' ', string)
 
     def display_date(data):
-        temp = parse(data)
-        return temp.strftime('%m-%d-%Y @ %R %Z')
+        if data:
+            temp = parse(data)
+            return temp.strftime('%m-%d-%Y @ %R %Z')
+        return
 
     def generate_server_age(data):
         duration = '-'
