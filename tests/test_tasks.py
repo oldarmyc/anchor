@@ -453,7 +453,7 @@ class AnchorCeleryTests(unittest.TestCase):
 
     def test_celery_generate_data(self):
         cloud_return = self.setup_servers_details_return()
-        # fg_return = self.setup_fg_servers_details_return()
+        fg_return = self.setup_fg_servers_details_return()
         with self.app.test_client() as c:
             with c.session_transaction() as sess:
                 self.setup_user_login(sess)
@@ -463,30 +463,35 @@ class AnchorCeleryTests(unittest.TestCase):
                 True,
                 create=True
             ):
-                with mock.patch('requests.get') as patched_get:
-                    patched_get.return_value.content = json.dumps(cloud_return)
-                    task = self.tasks.generate_account_server_list(
-                        '123456',
-                        uuid.uuid4().hex,
-                        'iad'
-                    )
+                with mock.patch('anchor.tasks.generate_server_list') as ng:
+                    ng.return_value = cloud_return.get('servers')
+                    with mock.patch(
+                        'anchor.tasks.generate_first_gen_server_list'
+                    ) as fg:
+                        fg.return_value = fg_return.get('servers')
+                        task = self.tasks.generate_account_server_list(
+                            '123456',
+                            uuid.uuid4().hex,
+                            'iad'
+                        )
 
         assert task is None, 'Data returned when it should have been stored'
         account = self.db.accounts.find_one()
         self.assertEquals(
             len(account.get('host_servers')),
-            2,
-            'Host servers should have two IDs'
+            3,
+            'Host servers should have three IDs'
         )
         self.assertEquals(
             len(account.get('servers')),
-            2,
-            'Servers should have two stored in the data'
+            3,
+            'Servers should have three stored in the data'
         )
         assert account.get('region') == 'iad', 'Incorrect region stored'
 
     def test_celery_generate_data_for_web(self):
         cloud_return = self.setup_servers_details_return()
+        fg_return = self.setup_fg_servers_details_return()
         with self.app.test_client() as c:
             with c.session_transaction() as sess:
                 self.setup_user_login(sess)
@@ -496,25 +501,29 @@ class AnchorCeleryTests(unittest.TestCase):
                 True,
                 create=True
             ):
-                with mock.patch('requests.get') as patched_get:
-                    patched_get.return_value.content = json.dumps(cloud_return)
-                    task = self.tasks.generate_account_server_list(
-                        '123456',
-                        uuid.uuid4().hex,
-                        'iad',
-                        True
-                    )
+                with mock.patch('anchor.tasks.generate_server_list') as ng:
+                    ng.return_value = cloud_return.get('servers')
+                    with mock.patch(
+                        'anchor.tasks.generate_first_gen_server_list'
+                    ) as fg:
+                        fg.return_value = fg_return.get('servers')
+                        task = self.tasks.generate_account_server_list(
+                            '123456',
+                            uuid.uuid4().hex,
+                            'iad',
+                            True
+                        )
 
         account = self.db.accounts.find_one()
         self.assertEquals(
             len(account.get('host_servers')),
-            2,
-            'Host servers should have two IDs'
+            3,
+            'Host servers should have three IDs'
         )
         self.assertEquals(
             len(account.get('servers')),
-            2,
-            'Servers should have two stored in the data'
+            3,
+            'Servers should have three stored in the data'
         )
         assert account.get('region') == 'iad', 'Incorrect region stored'
         assert str(account.get('_id')) == task, (
@@ -603,3 +612,36 @@ class AnchorCeleryTests(unittest.TestCase):
                     )
 
         assert task is False, 'Incorrect status returned with check'
+
+    def test_celery_generate_data_no_servers(self):
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('requests.get') as patched_get:
+                    patched_get.return_value.content = json.dumps(
+                        {'servers': []}
+                    )
+                    self.tasks.generate_account_server_list(
+                        '123456',
+                        uuid.uuid4().hex,
+                        'iad'
+                    )
+
+        account = self.db.accounts.find_one()
+        self.assertEquals(
+            len(account.get('host_servers')),
+            0,
+            'Host servers should have 0 IDs'
+        )
+        self.assertEquals(
+            len(account.get('servers')),
+            0,
+            'Servers should have 0 stored in the data'
+        )
+        assert account.get('region') == 'iad', 'Incorrect region stored'
