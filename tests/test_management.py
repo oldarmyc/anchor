@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from anchor import setup_application
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 
@@ -140,8 +140,8 @@ class AnchorTests(unittest.TestCase):
         )
 
     def test_ui_login_post(self):
-        today = datetime.now()
-        tomorrow = '%s-%s-%s' % (today.year, today.month, today.day + 1)
+        today = datetime.now() + timedelta(days=1)
+        tomorrow = '%s-%s-%s' % (today.year, today.month, today.day)
         with self.app.test_client() as c:
             response = c.get('/admin/login')
             token = self.retrieve_csrf_token(response.data)
@@ -177,8 +177,8 @@ class AnchorTests(unittest.TestCase):
                 )
 
     def test_ui_login_post_admin(self):
-        today = datetime.now()
-        tomorrow = '%s-%s-%s' % (today.year, today.month, today.day + 1)
+        today = datetime.now() + timedelta(days=1)
+        tomorrow = '%s-%s-%s' % (today.year, today.month, today.day)
         with self.app.test_client() as c:
             response = c.get('/admin/login')
             token = self.retrieve_csrf_token(response.data)
