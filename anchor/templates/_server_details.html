@@ -1,0 +1,49 @@
+{%- for host, items in servers.iteritems() %}
+    <div class="{{ loop.cycle('host-even', 'host-odd') }}{%- if items|length > 1 %} multiple-servers{% elif mismatch %} single-server{% endif-%}">
+        <h5>Host Server ID:
+            <span class="host-id">{{ host }}</span>
+        </h5>
+        {% for item in items %}
+            <dl class="dl-horizontal server-info">
+                {%- if item.get('reboot_window') %}
+                    <dt class="reboot">Reboot Window:</dt>
+                    <dd class="reboot">{{ process_reboot_data(item.get('reboot_window')) }}</dd>
+                {% endif -%}
+                {%- if item.get('type') %}
+                    <dt class="first-gen">Server Type:</dt>
+                    <dd class="first-gen">First Generation</dd>
+                {% endif -%}
+                <dt>Server Name:</dt>
+                <dd>{{ item.get('name') }}</dd>
+                <dt>Server ID:</dt>
+                <dd>{{ item.get('id') }}</dd>
+                <dt>Status:</dt>
+                <dd>{{ item.get('state') }}</dd>
+                <dt>Flavor:</dt>
+                <dd>{{ item.get('flavor') }}</dd>
+                <dt>Public IPs:</dt>
+                {%- if item.get('public') %}
+                    {% for ip in item.get('public') %}
+                        <dd>{{ ip }}</dd>
+                    {% endfor %}
+                {% else %}
+                    <dd>-</dd>
+                {% endif -%}
+                <dt>Private IPs:</dt>
+                {%- if item.get('private') %}
+                    {% for ip in item.get('private') %}
+                        <dd>{{ ip }}</dd>
+                    {% endfor %}
+                {% else %}
+                    <dd>-</dd>
+                {% endif -%}
+                {%- if item.get('created') %}
+                    <dt>Created:</dt>
+                    <dd>{{ display_date(item.get('created')) }}</dd>
+                    <dt>Server Age:</dt>
+                    <dd>{{ generate_server_age(item.get('created')) }}</dd>
+                {% endif -%}
+            </dl>
+        {% endfor %}
+    </div>
+{% endfor -%}
