@@ -52,12 +52,16 @@ def gather_dc_choices():
 
 
 def format_server_list_for_web(data):
-    send_data = {}
+    send_data = {
+        'fg': {},
+        'ng': {}
+    }
     for server in data.get('servers'):
+        type_key = server.get('type', 'ng')
         try:
-            send_data[server.get('host_id')].append(server)
+            send_data[type_key][server.get('host_id')].append(server)
         except:
-            send_data[server.get('host_id')] = [server]
+            send_data[type_key][server.get('host_id')] = [server]
 
     return send_data
 
