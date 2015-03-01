@@ -21,6 +21,7 @@ from celery.utils.log import get_task_logger
 import config.celery as config
 import requests
 import json
+import re
 
 
 celery_app = Celery('anchor')
@@ -104,6 +105,9 @@ def generate_first_gen_server_list(account_number, token, region):
         'https://servers.api.rackspacecloud.com/v1.0/%s/'
         'servers/detail' % account_number
     )
+    if region.lower() == 'lon':
+        url = re.sub('servers.api', 'lon.servers.api', url)
+
     content = process_api_request(url, 'get', None, headers)
     if not content:
         return []
