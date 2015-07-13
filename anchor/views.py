@@ -356,7 +356,7 @@ class ServerAPI(Resource):
             check_host
         )
         duplicate = False
-        if len(host_servers) > 1:
+        if host_servers is not None and len(host_servers) > 1:
             duplicate = True
 
         return jsonify(duplicate=duplicate, host_servers=host_servers)
