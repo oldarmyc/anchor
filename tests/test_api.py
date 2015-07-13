@@ -345,6 +345,7 @@ class AnchorTests(unittest.TestCase):
         assert check_data.get('duplicate') is False, (
             'Incorrect duplicate value'
         )
+        assert check_data is not None, 'Data is none and should not be'
         assert len(check_data.get('host_servers')) == 1, (
             'Incorrect number of servers returned for host'
         )
