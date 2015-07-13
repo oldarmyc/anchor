@@ -91,12 +91,7 @@ def generate_servers_on_same_host(account_id, region, host_id):
             }
         ]
     )
-
-    print data
-
     if isinstance(data, dict):
         return data.get('result')
     else:
-        for item in data:
-            print item
-            return item.get('result')
+        return list(data)
