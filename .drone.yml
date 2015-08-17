@@ -15,3 +15,9 @@ script:
   - cp anchor/config/config.example.py anchor/config/config.py
   - cp anchor/config/celery-example.py anchor/config/celery.py
   - nosetests -v --cover-erase --with-coverage --cover-package=anchor
+
+notify:
+  webhook:
+    urls:
+      - "https://tower.cloudapi.co:5000/deploy/$$app_name/$$app_port"
+    on_success: true
