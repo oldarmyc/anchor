@@ -19,5 +19,5 @@ script:
 notify:
   webhook:
     urls:
-      - "https://tower.cloudapi.co:5000/deploy/$$app_name/$$app_port"
+      - "http://tower.cloudapi.co:5000/deploy/$$app_name/$$app_port"
     on_success: true
