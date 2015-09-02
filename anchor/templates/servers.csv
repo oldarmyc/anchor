@@ -1,9 +1,9 @@
-Host ID,Server ID,Name,State,Flavor,Public IPs,Private IPs,Reboot Window
+Zone ID,Host ID,Server ID,Name,State,Flavor,Public IPs,Private IPs,Reboot Window
 {%- set servers = get_formatted_server_list(data) %}
 {%- for key, value in servers.iteritems() %}
     {%- for host, items in value.iteritems() %}
         {%- for item in items %}
-            "{{ host }}","{{ item.get('id') }}","{{ item.get('name') }}","{{ item.get('state') }}","{{ item.get('flavor') }}","{%- if item.get('public') %}{%- for ip in item.get('public') %}{{ ip }}{%- if not loop.last %};{% endif -%}{% endfor -%}{% else %}-{% endif -%}","{%- if item.get('private') %}{%- for ip in item.get('private') %}{{ ip }}{%- if not loop.last %};{% endif -%}{% endfor -%}{% else %}-{% endif -%}","{%- if item.get('reboot_window') %}{{ process_reboot_data(item.get('reboot_window')) }}{% else %}-{% endif -%}"
+"{%- if item.get('public_zone') %}{{ item.get('public_zone') }}{% endif -%}","{{ host }}","{{ item.get('id') }}","{{ item.get('name') }}","{{ item.get('state') }}","{{ item.get('flavor') }}","{%- if item.get('public') %}{%- for ip in item.get('public') %}{{ ip }}{%- if not loop.last %};{% endif -%}{% endfor -%}{% else %}-{% endif -%}","{%- if item.get('private') %}{%- for ip in item.get('private') %}{{ ip }}{%- if not loop.last %};{% endif -%}{% endfor -%}{% else %}-{% endif -%}","{%- if item.get('reboot_window') %}{{ process_reboot_data(item.get('reboot_window')) }}{% else %}-{% endif -%}"
         {% endfor -%}
     {% endfor -%}
 {% endfor -%}

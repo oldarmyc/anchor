@@ -13,6 +13,10 @@
                     <dt class="first-gen">Server Type:</dt>
                     <dd class="first-gen">First Generation</dd>
                 {% endif -%}
+                {%- if item.get('public_zone') %}
+                    <dt>Public Zone:</dt>
+                    <dd>{{ item.get('public_zone') }}</dd>
+                {% endif -%}
                 <dt>Server Name:</dt>
                 <dd>{{ item.get('name') }}</dd>
                 <dt>Server ID:</dt>
