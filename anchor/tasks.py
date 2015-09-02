@@ -185,6 +185,7 @@ def process_server_details(server):
         'state': server.get('OS-EXT-STS:vm_state'),
         'id': server.get('id'),
         'host_id': host_id,
+        'public_zone': server.get('RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId'),
         'name': server.get('name'),
         'created': server.get('created'),
         'flavor': server.get('flavor').get('id'),
