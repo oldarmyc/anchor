@@ -95,6 +95,10 @@ class AnchorCeleryTests(unittest.TestCase):
                         'f0ab54576022b02c128b9516ef23a99'
                         '47c73a8564ca79c7d1debb015'
                     ),
+                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                        'bf8a1d259e0fdec48a44140b7f5f'
+                        'fc3acdcd8e0a76ea57b0c84edbd3'
+                    ),
                     'flavor': 'general1-1',
                     'id': '00000000-1111-2222-3333-444444444444',
                     'private': [
@@ -186,6 +190,10 @@ class AnchorCeleryTests(unittest.TestCase):
                 'hostId': (
                     '16cde3191df1e6c9fa4dad65eacd4dc7c90d60bca3589ac48f55aae8'
                 ),
+                'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                    'bf8a1d259e0fdec48a44140b7f5f'
+                    'fc3acdcd8e0a76ea57b0c84edbd3'
+                ),
                 'name': 'test_server_awesome',
                 'created': '2015-01-01T16:06:05Z',
                 'tenant_id': '123456',
@@ -273,6 +281,10 @@ class AnchorCeleryTests(unittest.TestCase):
                         '16cde3191df1e6c9fa4dad65eacd4dc7'
                         'c90d60bca3589ac48f55aae8'
                     ),
+                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                        'bf8a1d259e0fdec48a44140b7f5f'
+                        'fc3acdcd8e0a76ea57b0c84edbd3'
+                    ),
                     'name': 'test_server_awesome',
                     'created': '2015-01-01T16:06:05Z',
                     'tenant_id': '123456',
@@ -353,6 +365,10 @@ class AnchorCeleryTests(unittest.TestCase):
                     'hostId': (
                         'b4631f368e35d06bef81053b66e5'
                         '40c95836fc0eb796176dc624a2cd'
+                    ),
+                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                        'bf8a1d259e0fdec48a44140b7f5f'
+                        'fc3acdcd8e0a76ea57b0c84edbd3'
                     ),
                     'name': 'test_server',
                     'created': '2015-01-01T16:06:05Z',

@@ -95,6 +95,10 @@ class AnchorTests(unittest.TestCase):
                         'f0ab54576022b02c128b9516ef23a99'
                         '47c73a8564ca79c7d1debb015'
                     ),
+                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                        'bf8a1d259e0fdec48a44140b7f5f'
+                        'fc3acdcd8e0a76ea57b0c84edbd3'
+                    ),
                     'flavor': 'general1-1',
                     'id': '00000000-1111-2222-3333-444444444444',
                     'private': [
@@ -111,6 +115,10 @@ class AnchorTests(unittest.TestCase):
                     'host_id': (
                         'f0ab54576022b02c128b9516ef23a99'
                         '47c73a8564ca79c7d1debb015'
+                    ),
+                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                        'bf8a1d259e0fdec48a44140b7f5f'
+                        'fc3acdcd8e0a76ea57b0c84edbd3'
                     ),
                     'flavor': 'general1-1',
                     'id': '11111111-2222-3333-4444-55566667777',
