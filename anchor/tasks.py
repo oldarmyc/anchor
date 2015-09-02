@@ -24,6 +24,10 @@ import json
 import re
 
 
+# Disable requests warnings from urllib3
+requests.packages.urllib3.disable_warnings()
+
+
 celery_app = Celery('anchor')
 logger = get_task_logger(__name__)
 celery_app.config_from_object(config)
