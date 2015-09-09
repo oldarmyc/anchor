@@ -248,6 +248,7 @@ def generate_account_server_list(
 ):
     ng_servers = generate_server_list(account_number, token, region)
     fg_servers = generate_first_gen_server_list(account_number, token, region)
+    servers = []
     data = {
         'account_number': account_number,
         'region': region,
