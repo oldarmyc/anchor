@@ -182,14 +182,28 @@ def generate_zone_and_server_data(ng_servers):
 
 
 def process_server_details(server):
-    data, public, private = {}, [], []
-    if server.get('addresses').get('public'):
-        for item in server.get('addresses').get('public'):
-            public.append(item.get('addr'))
+    data, addresses, found_public = {}, {}, False
+    for key, value in server.get('addresses').iteritems():
+        if key not in ['public', 'private']:
+            key = 'custom'
 
-    if server.get('addresses').get('private'):
-        for item in server.get('addresses').get('private'):
-            private.append(item.get('addr'))
+        if key == 'public':
+            found_public = True
+
+        if len(value) > 0:
+            for item in value:
+                server_address = item.get('addr')
+                if key == 'public' and item.get('version') == 4:
+                    if server_address != server.get('accessIPv4'):
+                        server_address = server.get('accessIPv4')
+
+                try:
+                    addresses[key].append(server_address)
+                except:
+                    addresses[key] = [server_address]
+
+    if not found_public and server.get('accessIPv4'):
+        addresses['public'] = [server.get('accessIPv4')]
 
     host_id = server.get('hostId')
     metadata = server.get('metadata', {})
@@ -201,8 +215,7 @@ def process_server_details(server):
         'name': server.get('name'),
         'created': server.get('created'),
         'flavor': server.get('flavor').get('id'),
-        'public': public,
-        'private': private,
+        'addresses': addresses,
         'reboot_window': metadata.get('rax:reboot_window')
     }
     return data
