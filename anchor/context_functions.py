@@ -21,7 +21,8 @@ import re
 
 def utility_processor():
     def unslug(string):
-        return re.sub('_', ' ', string)
+        if string:
+            return re.sub('_', ' ', string)
 
     def display_date(data):
         if data:
