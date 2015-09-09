@@ -52,6 +52,7 @@ class LookupView(FlaskView):
                 session.get('ddi'),
                 session.get('cloud_token'),
                 request.json.get('data_center'),
+                request.json.get('lookup_type'),
                 True
             )
             return jsonify(task_id=task.task_id)
@@ -66,13 +67,14 @@ class LookupView(FlaskView):
                 )
                 mismatch = False
                 if (
+                    account_data.get('lookup_type') == 'host_server' and
                     len(account_data.get('servers')) !=
                     len(account_data.get('host_servers'))
                 ):
                     mismatch = True
 
                 return render_template(
-                    '_host_breakdown.html',
+                    '_server_breakdown.html',
                     data=account_data,
                     mismatch=mismatch,
                     task_id=task_id
