@@ -32,8 +32,10 @@ class Account:
         self.account_number = data.get('account_number')
         self.cache_expiration = self.set_expiration()
         self.host_servers = data.get('host_servers')
+        self.public_zones = data.get('public_zones')
         self.region = data.get('region').lower()
         self.servers = data.get('servers')
+        self.lookup_type = data.get('lookup_type')
 
     def set_expiration(self):
         return datetime.now(UTC) + relativedelta(days=1)

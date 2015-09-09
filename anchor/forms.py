@@ -55,3 +55,11 @@ class RegionSet(Form):
 
 class DCSelect(Form):
     data_center = DynamicSelectField('Select Data Center:', choices=[('', '')])
+    lookup_type = fields.SelectField(
+        'Breakdown:',
+        choices=[
+            ('host_server', 'Host Server'),
+            ('public_ip_zone', 'Public IP Zone'),
+        ],
+        default='host_server'
+    )
