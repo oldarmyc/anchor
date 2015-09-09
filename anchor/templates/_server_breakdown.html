@@ -1,6 +1,11 @@
+{%- set lookup_type = data.get('lookup_type') %}
 <h2>
-    {{ data.get('region')|upper }} - Host Server Breakdown
-    <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center</button>
+    {%- set title = unslug(lookup_type)|title %}
+    {% if title == 'Public Ip Zone' %}
+        {% set title = "Public IP Zone" %}
+    {% endif -%}
+    {{ data.get('region')|upper }} - {{ title }} Breakdown
+    <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center/Lookup</button>
     {%- if mismatch %}
         <button class="btn btn-info show-all" title="Show All Servers">Show All Servers</button>
     {% endif -%}
@@ -16,11 +21,23 @@
         <div class="panel panel-success" style="width: 50%;">
             <div class="panel-body text-success">
     {% endif -%}
-            <div class="server-data"><span class="total-label">Total Servers: </span>{{ data.get('servers')|length }}</div>
-            <div class="server-data"><span class="total-label">Total Hosts: </span>{{ data.get('host_servers')|length }}</div>
+            {%- if lookup_type == 'host_server' %}
+                <div class="server-data"><span class="total-label">Total Servers: </span>{{ data.get('servers')|length }}</div>
+                <div class="server-data"><span class="total-label">Total Hosts: </span>{{ data.get('host_servers')|length }}</div>
+            {% else %}
+                <div class="server-data"><span class="total-label">Total Servers: </span>{{ data.get('servers')|length }}</div>
+                <div class="server-data"><span class="total-label">Total Zones: </span>{{ data.get('public_zones')|length }}</div>
+            {% endif -%}
         </div>
     </div>
-    {% set all_servers = get_formatted_server_list(data) %}
+    {%- if lookup_type == 'public_ip_zone' %}
+        <div class="panel panel-danger" style="width: 50%;">
+            <div class="panel-body text-danger">
+                <span class="total-label">Note:</span> FG Servers are not included in Public IP Zone breakdown.
+            </div>
+        </div>
+    {% endif -%}
+    {%- set all_servers = get_formatted_server_list(data) %}
     {%- if all_servers.get('ng') %}
         <h4>Next Gen Servers</h4>
         {%- set servers = all_servers.get('ng') %}
