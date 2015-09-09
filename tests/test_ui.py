@@ -95,19 +95,20 @@ class AnchorTests(unittest.TestCase):
                         'f0ab54576022b02c128b9516ef23a99'
                         '47c73a8564ca79c7d1debb015'
                     ),
-                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                    'public_zone': (
                         'bf8a1d259e0fdec48a44140b7f5f'
                         'fc3acdcd8e0a76ea57b0c84edbd3'
                     ),
                     'flavor': 'general1-1',
                     'id': '00000000-1111-2222-3333-444444444444',
-                    'private': [
-                        '10.10.10.10'
-                    ],
-                    'public': [
-                        '162.162.162.162',
-                        '2001:2001:2001:102:2001:2001:2001:2001'
-                    ]
+                    'addresses': {
+                        'private': ['10.10.10.10'],
+                        'public': [
+                            '162.162.162.162',
+                            '2001:2001:2001:102:2001:2001:2001:2001'
+                        ],
+                        'custom': ['192.168.1.1']
+                    }
                 }, {
                     'state': 'active',
                     'name': 'test-server2',
@@ -116,20 +117,25 @@ class AnchorTests(unittest.TestCase):
                         'f0ab54576022b02c128b9516ef23a99'
                         '47c73a8564ca79c7d1debb015'
                     ),
-                    'RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId': (
+                    'public_zone': (
                         'bf8a1d259e0fdec48a44140b7f5f'
                         'fc3acdcd8e0a76ea57b0c84edbd3'
                     ),
                     'flavor': 'general1-1',
                     'id': '11111111-2222-3333-4444-55566667777',
-                    'private': [
-                        '10.10.10.10'
-                    ],
-                    'public': [
-                        '163.163.163.163',
-                        '2002:2002:2002:102:2002:2002:2002:2002'
-                    ]
-                },
+                    'addresses': {
+                        'private': [
+                            '11.11.11.11'
+                        ],
+                        'public': [
+                            '163.163.163.163',
+                            '2002:2002:2002:102:2002:2002:2002:2002'
+                        ],
+                        'custom': [
+                            '192.168.2.1'
+                        ]
+                    }
+                }
             ],
             'token': 'd6ffb5c691a644a4b527f8ddc64c180f',
             'lookup_type': 'host_server',
@@ -299,15 +305,21 @@ class AnchorTests(unittest.TestCase):
                     )
 
         self.assertIn(
-            'Host ID,Server ID,Name,State,Flavor,Public IPs,Private IPs',
+            (
+                'Zone ID,Host ID,Server ID,Name,State,Flavor,Public IPs'
+                ',Private IPs,Custom IPs,Reboot Window'
+            ),
             response.data,
             'Incorrect headers found in response'
         )
         self.assertIn(
-            '"f0ab54576022b02c128b9516ef23a9947c73a8564ca79c7d1debb015",'
-            '"11111111-2222-3333-4444-55566667777","test-server2","active",'
-            '"general1-1","163.163.163.163;2002:2002:2002:102:2002:'
-            '2002:2002:2002","10.10.10.10"',
+            (
+                '"bf8a1d259e0fdec48a44140b7f5ffc3acdcd8e0a76ea57b0c84edbd3",'
+                '"f0ab54576022b02c128b9516ef23a9947c73a8564ca79c7d1debb015",'
+                '"11111111-2222-3333-4444-55566667777","test-server2","active"'
+                ',"general1-1","163.163.163.163;2002:2002:2002:102:2002:2002:'
+                '2002:2002","11.11.11.11","192.168.2.1","-"'
+            ),
             response.data,
             'Incorrect data returned for CSV'
         )
