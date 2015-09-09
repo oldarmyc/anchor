@@ -76,8 +76,7 @@ def generate_servers_on_same_host(account_id, region, host_id):
             {
                 '$match': {
                     'account_number': account_id,
-                    'region': region,
-                    'lookup_type': 'host_server'
+                    'region': region
                 }
             }, {
                 '$unwind': '$servers'
