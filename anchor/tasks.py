@@ -169,6 +169,18 @@ def generate_host_and_server_data(ng_servers, fg_servers):
     return servers, hosts
 
 
+def generate_zone_and_server_data(ng_servers):
+    public_zones, servers = [], []
+    for server in ng_servers:
+        public_zone = server.get('RAX-PUBLIC-IP-ZONE-ID:publicIPZoneId')
+        data = process_server_details(server)
+        servers.append(data)
+        if public_zone not in public_zones:
+            public_zones.append(public_zone)
+
+    return servers, public_zones
+
+
 def process_server_details(server):
     data, public, private = {}, [], []
     if server.get('addresses').get('public'):
