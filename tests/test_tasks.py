@@ -211,6 +211,9 @@ class AnchorCeleryTests(unittest.TestCase):
                                 'version': 4,
                                 'addr': '104.104.104.104'
                             }, {
+                                'version': 4,
+                                'addr': '11.11.11.11'
+                            }, {
                                 'version': 6,
                                 'addr': (
                                     '2001:2001:2001:104:2001:2001:2001:2001'
@@ -467,7 +470,7 @@ class AnchorCeleryTests(unittest.TestCase):
             'Data was changed and should not have been from the original data'
         )
 
-    def test_celery_generate_data(self):
+    def test_celery_generate_data_host(self):
         cloud_return = self.setup_servers_details_return()
         fg_return = self.setup_fg_servers_details_return()
         with self.app.test_client() as c:
@@ -488,7 +491,8 @@ class AnchorCeleryTests(unittest.TestCase):
                         task = self.tasks.generate_account_server_list(
                             '123456',
                             uuid.uuid4().hex,
-                            'iad'
+                            'iad',
+                            'host_server'
                         )
 
         assert task is None, 'Data returned when it should have been stored'
@@ -502,6 +506,45 @@ class AnchorCeleryTests(unittest.TestCase):
             len(account.get('servers')),
             3,
             'Servers should have three stored in the data'
+        )
+        assert account.get('region') == 'iad', 'Incorrect region stored'
+
+    def test_celery_generate_data_zone(self):
+        cloud_return = self.setup_servers_details_return()
+        fg_return = self.setup_fg_servers_details_return()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('anchor.tasks.generate_server_list') as ng:
+                    ng.return_value = cloud_return.get('servers')
+                    with mock.patch(
+                        'anchor.tasks.generate_first_gen_server_list'
+                    ) as fg:
+                        fg.return_value = fg_return.get('servers')
+                        task = self.tasks.generate_account_server_list(
+                            '123456',
+                            uuid.uuid4().hex,
+                            'iad',
+                            'public_ip_zone'
+                        )
+
+        assert task is None, 'Data returned when it should have been stored'
+        account = self.db.accounts.find_one()
+        self.assertEquals(
+            len(account.get('public_zones')),
+            1,
+            'Zones should have one ID'
+        )
+        self.assertEquals(
+            len(account.get('servers')),
+            2,
+            'Servers should have two stored in the data'
         )
         assert account.get('region') == 'iad', 'Incorrect region stored'
 
@@ -527,6 +570,7 @@ class AnchorCeleryTests(unittest.TestCase):
                             '123456',
                             uuid.uuid4().hex,
                             'iad',
+                            'host_server',
                             True
                         )
 
@@ -539,6 +583,48 @@ class AnchorCeleryTests(unittest.TestCase):
         self.assertEquals(
             len(account.get('servers')),
             3,
+            'Servers should have three stored in the data'
+        )
+        assert account.get('region') == 'iad', 'Incorrect region stored'
+        assert str(account.get('_id')) == task, (
+            'ID returned was not correct for the entry found'
+        )
+
+    def test_celery_generate_data_for_web_zones(self):
+        cloud_return = self.setup_servers_details_return()
+        fg_return = self.setup_fg_servers_details_return()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('anchor.tasks.generate_server_list') as ng:
+                    ng.return_value = cloud_return.get('servers')
+                    with mock.patch(
+                        'anchor.tasks.generate_first_gen_server_list'
+                    ) as fg:
+                        fg.return_value = fg_return.get('servers')
+                        task = self.tasks.generate_account_server_list(
+                            '123456',
+                            uuid.uuid4().hex,
+                            'iad',
+                            'public_ip_zone',
+                            True
+                        )
+
+        account = self.db.accounts.find_one()
+        self.assertEquals(
+            len(account.get('public_zones')),
+            1,
+            'Host servers should have three IDs'
+        )
+        self.assertEquals(
+            len(account.get('servers')),
+            2,
             'Servers should have three stored in the data'
         )
         assert account.get('region') == 'iad', 'Incorrect region stored'
@@ -562,7 +648,8 @@ class AnchorCeleryTests(unittest.TestCase):
                     self.tasks.generate_account_server_list(
                         '123456',
                         uuid.uuid4().hex,
-                        'iad'
+                        'iad',
+                        'host_server'
                     )
 
         account = self.db.accounts.find_one()
@@ -646,7 +733,8 @@ class AnchorCeleryTests(unittest.TestCase):
                     self.tasks.generate_account_server_list(
                         '123456',
                         uuid.uuid4().hex,
-                        'iad'
+                        'iad',
+                        'host_server'
                     )
 
         account = self.db.accounts.find_one()

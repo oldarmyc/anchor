@@ -132,6 +132,7 @@ class AnchorTests(unittest.TestCase):
                 },
             ],
             'token': 'd6ffb5c691a644a4b527f8ddc64c180f',
+            'lookup_type': 'host_server',
             'account_number': '123456'
         }
         self.db.accounts.insert(data)
