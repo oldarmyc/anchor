@@ -255,7 +255,8 @@ class AccountAPI(Resource):
         task_id = tasks.generate_account_server_list.delay(
             account_id,
             token,
-            region
+            region,
+            'host_server'
         )
         return jsonify(task_id=str(task_id))
 
