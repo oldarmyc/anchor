@@ -222,15 +222,7 @@ def process_server_details(server):
 
 
 def process_fg_server_details(server):
-    data, public, private = {}, [], []
-    if server.get('addresses').get('public'):
-        for item in server.get('addresses').get('public'):
-            public.append(item)
-
-    if server.get('addresses').get('private'):
-        for item in server.get('addresses').get('private'):
-            private.append(item)
-
+    data, addresses = {}, {}
     host_id = server.get('hostId')
     metadata = server.get('metadata', {})
     data = {
@@ -240,8 +232,7 @@ def process_fg_server_details(server):
         'host_id': host_id,
         'name': server.get('name'),
         'flavor': server.get('flavorId'),
-        'public': public,
-        'private': private,
+        'addresses': server.get('addresses'),
         'reboot_window': metadata.get('rax:reboot_window')
     }
     return data
