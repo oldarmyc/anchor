@@ -7,7 +7,7 @@
     <div id="dynamic_content">
         <h2>
             Host Server Breakdown
-            <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center</button>
+            <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center/Lookup</button>
         </h2>
     </div>
     <div id="lookup" class="modal fade" aria-labelledby="LookupForm" aria-hidden="true">
@@ -15,7 +15,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4>Select Datacenter</h4>
+                    <h4>Select Datacenter and Lookup</h4>
                 </div>
                 <div class="modal-body">
                     <form method="POST" class="form-horizontal" id="lookup_form">
@@ -52,7 +52,8 @@
             $("#lookup_form").unbind('submit').bind('submit', function(e){
                 e.preventDefault();
                 var data = {
-                    data_center: $('#data_center').val()
+                    data_center: $('#data_center').val(),
+                    lookup_type: $('#lookup_type').val()
                 };
                 $.ajax({
                     url: '/lookup/servers',
