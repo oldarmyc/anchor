@@ -1,7 +1,13 @@
 {%- for host, items in servers.iteritems() %}
-    <div class="{{ loop.cycle('host-even', 'host-odd') }}{%- if items|length > 1 %} multiple-servers{% elif mismatch %} single-server{% endif-%}">
-        <h5>Host Server ID:
-            <span class="host-id">{{ host }}</span>
+    <div class="{{ loop.cycle('host-even', 'host-odd') }}{%- if items|length > 1 %} multiple-servers{% elif mismatch %} single-server{% endif-%} {{ lookup_type }}">
+        <h5>
+            {%- if lookup_type == 'host_server' %}
+                Host Server ID:
+                <span class="host-id">{{ host }}</span>
+            {% elif lookup_type == 'public_ip_zone' %}
+                Public IP Zone:
+                <span class="host-id">{{ host }}</span>
+            {% endif -%}
         </h5>
         {% for item in items %}
             <dl class="dl-horizontal server-info">
@@ -13,33 +19,31 @@
                     <dt class="first-gen">Server Type:</dt>
                     <dd class="first-gen">First Generation</dd>
                 {% endif -%}
-                {%- if item.get('public_zone') %}
-                    <dt>Public Zone:</dt>
-                    <dd>{{ item.get('public_zone') }}</dd>
+                {%- if data.get('lookup_type') == 'host_server' %}
+                    {%- if item.get('public_zone') %}
+                        <dt>Public Zone:</dt>
+                        <dd>{{ item.get('public_zone') }}</dd>
+                    {% endif -%}
+                {% elif data.get('lookup_type') == 'public_ip_zone' %}
+                    <dt>Host Server:</dt>
+                    <dd>{{ item.get('host_id') }}</dd>
                 {% endif -%}
-                <dt>Server Name:</dt>
-                <dd>{{ item.get('name') }}</dd>
                 <dt>Server ID:</dt>
                 <dd>{{ item.get('id') }}</dd>
+                <dt>Server Name:</dt>
+                <dd>{{ item.get('name') }}</dd>
                 <dt>Status:</dt>
-                <dd>{{ item.get('state') }}</dd>
+                {% set server_state = item.get('state') %}
+                <dd class="{%- if server_state in ['active', 'ACTIVE'] %}text-success{% elif server_state == 'building' %}text-info{% else %}text-danger{% endif -%}"><strong>{{ item.get('state').lower() }}</strong></dd>
                 <dt>Flavor:</dt>
                 <dd>{{ item.get('flavor') }}</dd>
-                <dt>Public IPs:</dt>
-                {%- if item.get('public') %}
-                    {% for ip in item.get('public') %}
-                        <dd>{{ ip }}</dd>
+                {% if item.get('addresses') %}
+                    {% for key, value in item.get('addresses').iteritems() %}
+                        <dt>{{ key|title }} IPs:</dt>
+                        {% for ip in value %}
+                            <dd>{{ ip }}</dd>
+                        {% endfor %}
                     {% endfor %}
-                {% else %}
-                    <dd>-</dd>
-                {% endif -%}
-                <dt>Private IPs:</dt>
-                {%- if item.get('private') %}
-                    {% for ip in item.get('private') %}
-                        <dd>{{ ip }}</dd>
-                    {% endfor %}
-                {% else %}
-                    <dd>-</dd>
                 {% endif -%}
                 {%- if item.get('created') %}
                     <dt>Created:</dt>
