@@ -222,7 +222,7 @@ def process_server_details(server):
 
 
 def process_fg_server_details(server):
-    data, addresses = {}, {}
+    data = {}
     host_id = server.get('hostId')
     metadata = server.get('metadata', {})
     data = {
