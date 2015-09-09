@@ -239,22 +239,36 @@ def process_fg_server_details(server):
 
 
 @celery_app.task
-def generate_account_server_list(account_number, token, region, web=None):
+def generate_account_server_list(
+    account_number,
+    token,
+    region,
+    lookup_type,
+    web=None
+):
     ng_servers = generate_server_list(account_number, token, region)
     fg_servers = generate_first_gen_server_list(account_number, token, region)
-    servers, hosts = generate_host_and_server_data(ng_servers, fg_servers)
     data = {
         'account_number': account_number,
         'region': region,
-        'token': token,
-        'host_servers': hosts,
-        'servers': servers
+        'token': token
     }
+    if lookup_type == 'host_server':
+        servers, hosts = generate_host_and_server_data(ng_servers, fg_servers)
+        data['host_servers'] = hosts
+
+    elif lookup_type == 'public_ip_zone':
+        servers, public_zones = generate_zone_and_server_data(ng_servers)
+        data['public_zones'] = public_zones
+
+    data['servers'] = servers
+    data['lookup_type'] = lookup_type
     store_account = Account(data)
     db.accounts.update(
         {
             'account_number': store_account.account_number,
-            'region': region
+            'region': region,
+            'lookup_type': lookup_type
         },
         store_account.__dict__,
         upsert=True
@@ -263,10 +277,12 @@ def generate_account_server_list(account_number, token, region, web=None):
         account_data = db.accounts.find_one(
             {
                 'account_number': store_account.account_number,
-                'region': region
+                'region': region,
+                'lookup_type': lookup_type
             }
         )
         return str(account_data.get('_id'))
+
     return
 
 
