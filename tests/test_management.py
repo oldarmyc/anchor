@@ -13,15 +13,12 @@
 # limitations under the License.
 
 from anchor import setup_application
-from datetime import datetime, timedelta
 from uuid import uuid4
 
 
 import unittest
-import json
 import urlparse
 import re
-import mock
 
 
 class AnchorTests(unittest.TestCase):

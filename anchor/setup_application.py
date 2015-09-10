@@ -27,7 +27,6 @@ import template_filters
 import defaults
 import logging
 import views
-import re
 
 
 def create_app(db_name=None):
