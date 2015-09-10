@@ -13,33 +13,34 @@
 # limitations under the License.
 
 from flask import Flask, g
+from flask.ext.cloudadmin import Admin
+from flask.ext.cloudauth import CloudAuth
 from inspect import getmembers, isfunction
 from happymongo import HapPyMongo
+from datetime import timedelta
 from flask.ext import restful
 from config import config
-from adminbp import bp as admin_bp
 
 
 import context_functions
 import template_filters
+import defaults
+import logging
 import views
-import re
 
 
-def create_app(testing=None):
+def create_app(db_name=None):
     app = Flask(__name__)
-    if testing:
-        config.TESTING = True
-        m = re.search('_test', config.MONGO_DATABASE)
-        if not m:
-            config.MONGO_DATABASE = '%s_test' % config.MONGO_DATABASE
-
-        config.ADMIN = 'rusty.shackelford'
-
     app.config.from_object(config)
-    app.register_blueprint(admin_bp, url_prefix='/admin')
+    if db_name:
+        config.MONGO_DATABASE = db_name
+
+    Admin(app)
     mongo, db = HapPyMongo(config)
     api = restful.Api(app)
+    app.permanent_session_lifetime = timedelta(hours=2)
+    auth = CloudAuth(app, db)
+
     custom_filters = {
         name: function for name, function in getmembers(template_filters)
         if isfunction(function)
@@ -47,10 +48,17 @@ def create_app(testing=None):
     app.jinja_env.filters.update(custom_filters)
     app.context_processor(context_functions.utility_processor)
 
+    @app.before_first_request
+    def logger():
+        if not app.debug:
+            app.logger.addHandler(logging.StreamHandler())
+            app.logger.setLevel(logging.INFO)
+
     @app.before_request
     def before_request():
-        g.db = db
+        g.db, g.auth = db, auth
 
+    defaults.application_initialize(db, app)
     views.BaseView.register(app)
     views.LookupView.register(app)
     views.ManagementView.register(app)
@@ -66,4 +74,7 @@ def create_app(testing=None):
         '/account/<account_id>/<region>/server/<server_id>',
         endpoint='server'
     )
-    return app, db
+    if db_name:
+        return app, db
+    else:
+        return app

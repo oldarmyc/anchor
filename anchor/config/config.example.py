@@ -17,7 +17,8 @@ MONGO_PORT = 27017
 MONGO_KWARGS = {'tz_aware': True}
 MONGO_DATABASE = 'anchor'
 
-ADMIN = 'cloud_username'
+ADMIN_USERNAME = 'cloud_username'
 ADMIN_NAME = 'Admin Full Name'
+ADMIN_EMAIL = 'Admin email'
 
 SECRET_KEY = 'secret_key_for_cookie'
