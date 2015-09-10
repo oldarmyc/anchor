@@ -19,3 +19,7 @@ celery
 pygments
 sphinx
 sphinx_http_domain
+
+-i http://pypi.cloudapi.co/simple
+cloudauth
+cloudadmin
