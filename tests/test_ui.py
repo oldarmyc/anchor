@@ -101,6 +101,9 @@ class AnchorTests(unittest.TestCase):
                     ),
                     'flavor': 'general1-1',
                     'id': '00000000-1111-2222-3333-444444444444',
+                    'reboot_window': (
+                        '2014-01-28T00:00:00Z;2014-01-28T03:00:00Z'
+                    ),
                     'addresses': {
                         'private': ['10.10.10.10'],
                         'public': [
@@ -123,6 +126,9 @@ class AnchorTests(unittest.TestCase):
                     ),
                     'flavor': 'general1-1',
                     'id': '11111111-2222-3333-4444-55566667777',
+                    'reboot_window': (
+                        '2014-01-28T00:00:00Z;2014-01-28T03:00:00Z'
+                    ),
                     'addresses': {
                         'private': [
                             '11.11.11.11'
@@ -318,7 +324,8 @@ class AnchorTests(unittest.TestCase):
                 '"f0ab54576022b02c128b9516ef23a9947c73a8564ca79c7d1debb015",'
                 '"11111111-2222-3333-4444-55566667777","test-server2","active"'
                 ',"general1-1","163.163.163.163;2002:2002:2002:102:2002:2002:'
-                '2002:2002","11.11.11.11","192.168.2.1","-"'
+                '2002:2002","11.11.11.11","192.168.2.1","01-28-2014 @ 12:00:00'
+                ' AM UTC - 01-28-2014 @ 03:00:00 AM UTC"'
             ),
             response.data,
             'Incorrect data returned for CSV'
