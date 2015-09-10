@@ -3,17 +3,17 @@
 {% block addHeaders %}
 {% endblock %}
 {% block body %}
-    <div class="jumbotron">
-        <div class="container">
-            <h1 class="site-header">{{ app_title }}</h1>
-            {{ app_well|safe }}
-            {% if not session.get('username') %}
-                <p><a href="{{ url_for('adminblueprint.login') }}" title="Login to Application" class="btn btn-primary">Login to Application</a></p>
-            {% endif %}
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+            <div class="front-header">
+                <h1 class="site-header">{{ app_title }}</h1>
+                {{ app_well|safe }}
+                {%- if not session.get('username') %}
+                    <p class="login-button"><button class="btn btn-primary login-check" title="Login to Application">Login to Application</button></p>
+                {% endif -%}
+            </div>
         </div>
     </div>
 {% endblock %}
 {% block jquery %}
-    <script>
-    </script>
 {% endblock %}
