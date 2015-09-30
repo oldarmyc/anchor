@@ -20,6 +20,6 @@ pygments
 sphinx
 sphinx_http_domain
 
--i https://pypi.cloudapi.co/simple
+-i https://pypi.cloudapi.co/simple --no-use-wheel
 cloudauth
 cloudadmin
