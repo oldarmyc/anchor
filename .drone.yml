@@ -2,7 +2,7 @@
 image: bradrydzewski/python:2.7
 
 services:
-  - mongodb:2.6
+  - mongodb:3.0.1
 
 script:
   - sudo apt-get update > /dev/null
