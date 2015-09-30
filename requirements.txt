@@ -3,7 +3,7 @@ Jinja2
 MarkupSafe
 Werkzeug
 itsdangerous
-pymongo
+pymongo==2.8
 wsgiref
 gunicorn
 happymongo
