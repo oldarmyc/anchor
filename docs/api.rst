@@ -12,7 +12,7 @@ Endpoint
 
 Public endpoint to use for all API calls ::
 
-    https://rscloud.info
+    https://anchor.cloudapi.co
 
 
 API Headers
