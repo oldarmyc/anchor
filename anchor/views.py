@@ -16,11 +16,11 @@ from flask import (
     g, render_template, request, redirect, url_for, flash, jsonify, session,
     make_response
 )
+from flask.ext.cloudadmin.decorators import check_perms
 from flask.ext.classy import FlaskView, route
 from flask.ext.restful import Resource
 from bson.objectid import ObjectId
 from models import Region
-from anchor.adminbp.decorators import check_perms
 
 
 import forms
@@ -50,7 +50,7 @@ class LookupView(FlaskView):
         if request.method == 'POST':
             task = tasks.generate_account_server_list.delay(
                 session.get('ddi'),
-                session.get('cloud_token'),
+                session.get('token'),
                 request.json.get('data_center'),
                 request.json.get('lookup_type'),
                 True
