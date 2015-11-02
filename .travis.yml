@@ -6,9 +6,11 @@ services:
   - mongodb
 install:
   - pip install -r requirements.txt
-  - pip install coverage flake8 mock funcsigs
+  - pip install coverage flake8 mock funcsigs python-coveralls
 before_script:
   - cp anchor/config/config.example.py anchor/config/config.py
   - cp anchor/config/celery-example.py anchor/config/celery.py
   - flake8 .
 script: nosetests -v --cover-erase --with-coverage --cover-package=anchor
+after_success:
+  - coveralls
