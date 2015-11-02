@@ -32,6 +32,9 @@ class BaseView(FlaskView):
     route_base = '/'
 
     def index(self):
+        if session and session.get('token'):
+            return redirect('/lookup/')
+
         return render_template('index.html')
 
 
