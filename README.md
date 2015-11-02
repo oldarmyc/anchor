@@ -1,4 +1,5 @@
-[![Build Status](https://drone.cloudapi.co/api/badge/github.com/rackerlabs/anchor/status.svg?branch=master)](https://drone.cloudapi.co/github.com/rackerlabs/anchor)</a>&nbsp;<a href="https://anchor.readthedocs.org"><img src="https://readthedocs.org/projects/anchor/badge/?version=latest" /></a>
+[![Build Status](https://travis-ci.org/oldarmyc/anchor.svg?branch=master)](https://travis-ci.org/oldarmyc/anchor)
+[![Build Status](http://anchor.readthedocs.org/?badge=latest)](http://anchor.readthedocs.org/?badge=latest)
 
 Anchor
 ========
