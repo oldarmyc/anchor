@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/oldarmyc/anchor.svg?branch=master)](https://travis-ci.org/oldarmyc/anchor)
-[![Build Status](http://anchor.readthedocs.org/?badge=latest)](http://anchor.readthedocs.org/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/anchor/badge/?version=latest)](http://anchor.readthedocs.org/?badge=latest)
 
 Anchor
 ========
