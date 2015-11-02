@@ -19,5 +19,5 @@ sphinx
 sphinx_http_domain
 
 -i https://pypi.cloudapi.co/simple
-cloudauth
+flask-cloudauth
 cloudadmin
