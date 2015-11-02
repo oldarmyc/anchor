@@ -5,7 +5,7 @@ services:
   - mongodb
 install:
   - pip install -r requirements.txt
-  - pip install coverage flake8 mock funcsigs python-coveralls
+  - pip install coverage==3.7.1 flake8 mock funcsigs python-coveralls
 before_script:
   - cp anchor/config/config.example.py anchor/config/config.py
   - cp anchor/config/celery-example.py anchor/config/celery.py
