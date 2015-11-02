@@ -12,11 +12,9 @@ WTForms
 python-memcached
 python-dateutil
 requests
-isoweek
 flask-classy
 flask-restful
 celery
-pygments
 sphinx
 sphinx_http_domain
 
