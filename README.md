@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/oldarmyc/anchor.svg?branch=master)](https://travis-ci.org/oldarmyc/anchor)
+[![Coverage Status](https://coveralls.io/repos/oldarmyc/anchor/badge.svg?branch=master&service=github)](https://coveralls.io/github/oldarmyc/anchor?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/anchor/badge/?version=latest)](http://anchor.readthedocs.org/?badge=latest)
 
 Anchor
