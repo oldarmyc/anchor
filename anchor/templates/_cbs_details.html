@@ -1,0 +1,43 @@
+{%- for host, items in all_volumes.iteritems() %}
+    <div class="{{ loop.cycle('host-even', 'host-odd') }} {%- if items|length > 1 %} multiple-servers{% elif mismatch %} single-server{% endif %} {{ lookup_type }}">
+        <h5>
+            CBS Host ID:
+            <span class="host-id">{{ host }}</span>
+        </h5>
+        {% for item in items %}
+            <dl class="dl-horizontal server-info">
+                <dt>Volume ID</dt>
+                <dd>{{ item.get('id') }}</dd>
+                <dt>Name:</dt>
+                <dd>{{ item.get('display_name') }}</dd>
+                <dt>Status:</dt>
+                {%- set volume_state = item.get('status') %}
+                <dd class="{%- if volume_state == 'available' %}text-success{% elif volume_state == 'in-use' %}text-info{% else %}text-danger{% endif -%}">{{ volume_state }}</dd>
+                <dt>Type:</dt>
+                <dd>{{ item.get('volume_type') }}</dd>
+                <dt>Size:</dt>
+                <dd>{{ item.get('size') }}</dd>
+                <dt>Bootable:</dt>
+                <dd>
+                    {%- if item.get('bootable') %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif -%}
+                </dd>
+                {%- if item.get('attached_to') %}
+                    <dt>Attached To:</dt>
+                    <dd>{{ item.get('attached_to') }}</dd>
+                    <dt>Attached As:</dt>
+                    <dd>{{ item.get('attached_as_device') }}</dd>
+                {% endif -%}
+                <dt>Availability Zone:</dt>
+                <dd>{{ item.get('availability_zone') }}</dd>
+                <dt>Created:</dt>
+                <dd>{{ item.get('created') }}</dd>
+                <dt>Volume Age</dt>
+                <dd>{{ generate_server_age(item.get('created')) }}</dd>
+            </dl>
+        {% endfor %}
+    </div>
+{% endfor -%}

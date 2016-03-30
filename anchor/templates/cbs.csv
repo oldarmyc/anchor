@@ -1,0 +1,3 @@
+Host ID,Volume ID,Name,Status,Type,Size,Bootable,Attached To,Attached As,Availability Zone
+{%- set volumes = get_formatted_volume_list(data) %}{%- for host, items in volumes.iteritems() %}{%- for item in items %}
+"{{ host }}","{{ item.get('id') }}","{{ item.get('display_name') }}","{{ item.get('status') }}","{{ item.get('volume_type') }}","{{ item.get('size') }}","{{ item.get('bootable') }}",{%- if item.get('attached_to') %}"{{ item.get('attached_to') }}","{{ item.get('attached_as_device') }}"{% else %}"",""{% endif -%},"{{ item.get('availability_zone') }}"{% endfor -%}{% endfor -%}
