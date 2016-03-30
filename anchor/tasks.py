@@ -100,6 +100,37 @@ def generate_server_list(account_number, token, region):
     return all_servers
 
 
+def generate_volume_list(account_number, token, region):
+    exit, all_volumes, limit, offset = False, [], 100, 0
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    while exit is False:
+        url = (
+            'https://%s.blockstorage.api.rackspacecloud.com/v1/%s/'
+            'volumes/detail?limit=%d&offset=%d' % (
+                region.lower(),
+                account_number,
+                limit,
+                offset
+            )
+        )
+        content = process_api_request(url, 'get', None, headers)
+        if not content:
+            break
+
+        volumes = content.get('volumes')
+        if len(volumes) < limit:
+            exit = True
+        else:
+            offset += limit
+
+        all_volumes += volumes
+
+    return all_volumes
+
+
 def generate_first_gen_server_list(account_number, token, region):
     headers = {
         'X-Auth-Token': token,
