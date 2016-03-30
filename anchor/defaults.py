@@ -141,7 +141,7 @@ def application_initialize(db, app):
                             'slug': 'logged_in',
                             'perms': [
                                 '/lookup/servers/<task_id>',
-                                '/lookup/servers/<task_id>/csv',
+                                '/lookup/servers/<task_id>/<lookup_type>/csv',
                                 '/admin/logout/',
                                 '/lookup/',
                                 '/lookup/servers',
