@@ -149,6 +149,43 @@ class AnchorTests(unittest.TestCase):
         }
         self.db.accounts.insert(data)
 
+    def setup_useable_cbs_account(self):
+        data = {
+            'host_servers': None,
+            'region': 'iad',
+            'public_zones': None,
+            'servers': None,
+            'account_number': '123456',
+            'volumes': [
+                {
+                    'status': 'available',
+                    'host': '4a61be11-f557-40ea-a286-d01edaf72336',
+                    'display_name': 'test_cbs',
+                    'created': '2015-12-17T12:29:15.000000',
+                    'bootable': True,
+                    'availability_zone': 'nova',
+                    'id': '910cd151-799f-4203-9cc0-9ee60518c60d',
+                    'volume_type': 'SATA',
+                    'size': 100
+                }, {
+                    'status': 'available',
+                    'host': '4a61be11-f557-40ea-a286-d01edaf72336',
+                    'display_name': 'test_cbs_2',
+                    'created': '2015-12-17T12:26:46.000000',
+                    'bootable': True,
+                    'availability_zone': 'nova',
+                    'id': '497d4575-2e0a-4375-88db-f6f6dfb8726c',
+                    'volume_type': 'SATA',
+                    'size': 100
+                }
+            ],
+            'cbs_hosts': [
+                '4a61be11-f557-40ea-a286-d01edaf72336'
+            ],
+            'lookup_type': 'cbs_host'
+        }
+        self.db.accounts.insert(data)
+
     def retrieve_csrf_token(self, data, variable=None):
         temp = re.search('id="csrf_token"(.+?)>', data)
         token = None
@@ -274,6 +311,37 @@ class AnchorTests(unittest.TestCase):
             'Could not find the region in the response'
         )
 
+    def test_ui_lookup_success_with_cbs_data(self):
+        self.setup_useable_cbs_account()
+        account = self.db.accounts.find_one()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch('anchor.tasks.check_task_state') as data:
+                data.return_value = 'SUCCESS'
+                with mock.patch('anchor.tasks.get_task_results') as data:
+                    data.return_value = str(account.get('_id'))
+                    response = c.get(
+                        '/lookup/servers/%s' % uuid4().hex
+                    )
+
+        self.assertIn(
+            account.get('volumes')[0].get('id'),
+            response.data,
+            'Could not find the test UUID for server in response'
+        )
+        self.assertIn(
+            account.get('cbs_hosts')[0],
+            response.data,
+            'Could not find the host ID in response'
+        )
+        self.assertIn(
+            account.get('region').upper(),
+            response.data,
+            'Could not find the region in the response'
+        )
+
     def test_ui_csv_pending_status(self):
         with self.app.test_client() as c:
             with c.session_transaction() as sess:
@@ -282,7 +350,7 @@ class AnchorTests(unittest.TestCase):
             with mock.patch('anchor.tasks.check_task_state') as data:
                 data.return_value = 'PENDING'
                 response = c.get(
-                    '/lookup/servers/%s/csv' % uuid4().hex
+                    '/lookup/servers/%s/host_server/csv' % uuid4().hex
                 )
 
         assert response._status_code == 302, (
@@ -307,7 +375,7 @@ class AnchorTests(unittest.TestCase):
                 with mock.patch('anchor.tasks.get_task_results') as data:
                     data.return_value = str(account.get('_id'))
                     response = c.get(
-                        '/lookup/servers/%s/csv' % uuid4().hex
+                        '/lookup/servers/%s/host_server/csv' % uuid4().hex
                     )
 
         self.assertIn(
@@ -326,6 +394,39 @@ class AnchorTests(unittest.TestCase):
                 ',"general1-1","163.163.163.163;2002:2002:2002:102:2002:2002:'
                 '2002:2002","11.11.11.11","192.168.2.1","01-28-2014 @ 12:00:00'
                 ' AM UTC - 01-28-2014 @ 03:00:00 AM UTC"'
+            ),
+            response.data,
+            'Incorrect data returned for CSV'
+        )
+
+    def test_ui_csv_generate_cbs(self):
+        self.setup_useable_cbs_account()
+        account = self.db.accounts.find_one()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch('anchor.tasks.check_task_state') as state:
+                state.return_value = 'SUCCESS'
+                with mock.patch('anchor.tasks.get_task_results') as data:
+                    data.return_value = str(account.get('_id'))
+                    response = c.get(
+                        '/lookup/servers/%s/cbs_host/csv' % uuid4().hex
+                    )
+
+        self.assertIn(
+            (
+                'Host ID,Volume ID,Name,Status,Type,Size,Bootable,'
+                'Attached To,Attached As,Availability Zone'
+            ),
+            response.data,
+            'Incorrect headers found in response'
+        )
+        self.assertIn(
+            (
+                '"4a61be11-f557-40ea-a286-d01edaf72336","910cd151-799f-4203-'
+                '9cc0-9ee60518c60d","test_cbs","available","SATA","100","True'
+                '","","","nova"'
             ),
             response.data,
             'Incorrect data returned for CSV'

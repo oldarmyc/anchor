@@ -115,6 +115,43 @@ class AnchorCeleryTests(unittest.TestCase):
         }
         self.db.accounts.insert(data)
 
+    def setup_useable_cbs_account(self):
+        data = {
+            'host_servers': None,
+            'region': 'iad',
+            'public_zones': None,
+            'servers': None,
+            'account_number': '123456',
+            'volumes': [
+                {
+                    'status': 'available',
+                    'host': '4a61be11-f557-40ea-a286-d01edaf72336',
+                    'display_name': 'test_cbs',
+                    'created': '2015-12-17T12:29:15.000000',
+                    'bootable': True,
+                    'availability_zone': 'nova',
+                    'id': '910cd151-799f-4203-9cc0-9ee60518c60d',
+                    'volume_type': 'SATA',
+                    'size': 100
+                }, {
+                    'status': 'available',
+                    'host': '4a61be11-f557-40ea-a286-d01edaf72336',
+                    'display_name': 'test_cbs_2',
+                    'created': '2015-12-17T12:26:46.000000',
+                    'bootable': True,
+                    'availability_zone': 'nova',
+                    'id': '497d4575-2e0a-4375-88db-f6f6dfb8726c',
+                    'volume_type': 'SATA',
+                    'size': 100
+                }
+            ],
+            'cbs_hosts': [
+                '4a61be11-f557-40ea-a286-d01edaf72336'
+            ],
+            'lookup_type': 'cbs_host'
+        }
+        self.db.accounts.insert(data)
+
     def setup_cloud_server_details_single_return(self):
         return {
             'server': {
@@ -381,6 +418,58 @@ class AnchorCeleryTests(unittest.TestCase):
             ]
         }
 
+    def setup_cbs_details_return(self):
+        return {
+            "volumes": [
+                {
+                    "status": "in-use",
+                    "display_name": "mc.backup",
+                    "availability_zone": "nova",
+                    "bootable": True,
+                    "encrypted": False,
+                    "created_at": "2015-12-17T12:29:15.000000",
+                    "multiattach": False,
+                    "display_description": None,
+                    "volume_type": "SATA",
+                    "snapshot_id": None,
+                    "size": 80,
+                    "id": "910cd151-799f-4203-9cc0-9ee60518c60d",
+                    "attachments": [
+                        {
+                            "server_id": (
+                                "161e2453-a5ba-49d8-a461-ce0e51bdcf52"
+                            ),
+                            "volume_id": (
+                                "910cd151-799f-4203-9cc0-9ee60518c60d"
+                            ),
+                            "device": "/dev/xvda",
+                            "id": "910cd151-799f-4203-9cc0-9ee60518c60d"
+                        }
+                    ],
+                    "metadata": {
+                        "storage-node": "497d4575-2e0a-4375-88db-f6f6dfb8726c"
+                    }
+                }, {
+                    "status": "available",
+                    "display_name": "drone.backup",
+                    "attachments": [],
+                    "availability_zone": "nova",
+                    "bootable": True,
+                    "encrypted": False,
+                    "created_at": "2015-12-17T12:26:46.000000",
+                    "multiattach": False,
+                    "display_description": None,
+                    "volume_type": "SATA",
+                    "snapshot_id": None,
+                    "size": 75,
+                    "id": "e7408004-5991-4899-941a-8d2970d77551",
+                    "metadata": {
+                        "storage-node": "497d4575-2e0a-4375-88db-f6f6dfb8726c"
+                    }
+                }
+            ]
+        }
+
     def setup_fg_servers_details_return(self):
         return {
             'servers': [
@@ -404,6 +493,8 @@ class AnchorCeleryTests(unittest.TestCase):
                 }
             ]
         }
+
+    """ Tests """
 
     def test_celery_add_server_to_cache(self):
         self.setup_useable_account()
@@ -488,7 +579,7 @@ class AnchorCeleryTests(unittest.TestCase):
                         'anchor.tasks.generate_first_gen_server_list'
                     ) as fg:
                         fg.return_value = fg_return.get('servers')
-                        task = self.tasks.generate_account_server_list(
+                        task = self.tasks.generate_account_object_list(
                             '123456',
                             uuid.uuid4().hex,
                             'iad',
@@ -527,7 +618,7 @@ class AnchorCeleryTests(unittest.TestCase):
                         'anchor.tasks.generate_first_gen_server_list'
                     ) as fg:
                         fg.return_value = fg_return.get('servers')
-                        task = self.tasks.generate_account_server_list(
+                        task = self.tasks.generate_account_object_list(
                             '123456',
                             uuid.uuid4().hex,
                             'iad',
@@ -566,7 +657,7 @@ class AnchorCeleryTests(unittest.TestCase):
                         'anchor.tasks.generate_first_gen_server_list'
                     ) as fg:
                         fg.return_value = fg_return.get('servers')
-                        task = self.tasks.generate_account_server_list(
+                        task = self.tasks.generate_account_object_list(
                             '123456',
                             uuid.uuid4().hex,
                             'iad',
@@ -608,7 +699,7 @@ class AnchorCeleryTests(unittest.TestCase):
                         'anchor.tasks.generate_first_gen_server_list'
                     ) as fg:
                         fg.return_value = fg_return.get('servers')
-                        task = self.tasks.generate_account_server_list(
+                        task = self.tasks.generate_account_object_list(
                             '123456',
                             uuid.uuid4().hex,
                             'iad',
@@ -645,7 +736,7 @@ class AnchorCeleryTests(unittest.TestCase):
                 with mock.patch('requests.get') as patched_get:
                     error = patched_get.side_effect = ValueError
                     patched_get.return_value = error
-                    self.tasks.generate_account_server_list(
+                    self.tasks.generate_account_object_list(
                         '123456',
                         uuid.uuid4().hex,
                         'iad',
@@ -730,7 +821,7 @@ class AnchorCeleryTests(unittest.TestCase):
                     patched_get.return_value.content = json.dumps(
                         {'servers': []}
                     )
-                    self.tasks.generate_account_server_list(
+                    self.tasks.generate_account_object_list(
                         '123456',
                         uuid.uuid4().hex,
                         'iad',
@@ -749,3 +840,121 @@ class AnchorCeleryTests(unittest.TestCase):
             'Servers should have 0 stored in the data'
         )
         assert account.get('region') == 'iad', 'Incorrect region stored'
+
+    """ CBS """
+
+    def test_celery_generate_cbs_data_for_web(self):
+        cloud_return = self.setup_cbs_details_return()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('anchor.tasks.generate_volume_list') as cbs:
+                    cbs.return_value = cloud_return.get('volumes')
+                    task = self.tasks.generate_account_object_list(
+                        '123456',
+                        uuid.uuid4().hex,
+                        'iad',
+                        'cbs_host',
+                        True
+                    )
+
+        account = self.db.accounts.find_one()
+        self.assertEquals(
+            len(account.get('cbs_hosts')),
+            1,
+            'CBS Hosts should have one ID'
+        )
+        self.assertEquals(
+            len(account.get('volumes')),
+            2,
+            'Volumes should have two stored in the data'
+        )
+        assert account.get('region') == 'iad', 'Incorrect region stored'
+        assert str(account.get('_id')) == task, (
+            'ID returned was not correct for the entry found'
+        )
+
+    def test_celery_generate_data_cbs_host(self):
+        cloud_return = self.setup_cbs_details_return()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('anchor.tasks.generate_volume_list') as cbs:
+                    cbs.return_value = cloud_return.get('volumes')
+                    task = self.tasks.generate_account_object_list(
+                        '123456',
+                        uuid.uuid4().hex,
+                        'iad',
+                        'cbs_host'
+                    )
+
+        assert task is None, 'Data returned when it should have been stored'
+        account = self.db.accounts.find_one()
+        self.assertEquals(
+            len(account.get('cbs_hosts')),
+            1,
+            'CBS Hosts should have one ID'
+        )
+        self.assertEquals(
+            len(account.get('volumes')),
+            2,
+            'Volumes should have two stored in the data'
+        )
+        assert account.get('region') == 'iad', 'Incorrect region stored'
+
+    def test_celery_generate_volume_list(self):
+        cloud_return = self.setup_cbs_details_return()
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('requests.get') as patched_get:
+                    patched_get.return_value.content = json.dumps(cloud_return)
+                    task = self.tasks.generate_volume_list(
+                        '123456',
+                        uuid.uuid4().hex,
+                        'iad'
+                    )
+
+        self.assertEquals(
+            len(task),
+            2,
+            'Did not get expected return of two volumes'
+        )
+
+    def test_celery_generate_volume_list_no_return(self):
+        with self.app.test_client() as c:
+            with c.session_transaction() as sess:
+                self.setup_user_login(sess)
+
+            with mock.patch(
+                'anchor.tasks.config.CELERY_ALWAYS_EAGER',
+                True,
+                create=True
+            ):
+                with mock.patch('requests.get') as patched_get:
+                    patched_get.return_value.content = None
+                    task = self.tasks.generate_volume_list(
+                        '123456',
+                        uuid.uuid4().hex,
+                        'iad'
+                    )
+
+        assert task == [], 'Got unexpected values on bad data return'
