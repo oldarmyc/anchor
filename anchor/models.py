@@ -35,6 +35,8 @@ class Account:
         self.public_zones = data.get('public_zones')
         self.region = data.get('region').lower()
         self.servers = data.get('servers')
+        self.volumes = data.get('volumes')
+        self.cbs_hosts = data.get('cbs_hosts')
         self.lookup_type = data.get('lookup_type')
 
     def set_expiration(self):
