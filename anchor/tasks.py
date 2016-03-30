@@ -181,6 +181,20 @@ def check_authorized(account_number, token):
     return False
 
 
+def generate_host_and_cbs_data(all_volumes):
+    hosts, volumes = [], []
+    for volume in all_volumes:
+        metadata = volume.get('metadata')
+        if metadata:
+            storage_node = metadata.get('storage-node')
+            data = process_volume_details(volume)
+            volumes.append(data)
+            if storage_node not in hosts:
+                hosts.append(storage_node)
+
+    return volumes, hosts
+
+
 def generate_host_and_server_data(ng_servers, fg_servers):
     hosts, servers = [], []
     for server in ng_servers:
@@ -210,6 +224,27 @@ def generate_zone_and_server_data(ng_servers):
             public_zones.append(public_zone)
 
     return servers, public_zones
+
+
+def process_volume_details(volume):
+    status = volume.get('status')
+    data = {
+        'status': status,
+        'id': volume.get('id'),
+        'size': volume.get('size'),
+        'volume_type': volume.get('volume_type'),
+        'display_name': volume.get('display_name'),
+        'created': volume.get('created_at'),
+        'bootable': volume.get('bootable'),
+        'host': volume.get('metadata').get('storage-node'),
+        'availability_zone': volume.get('availability_zone')
+    }
+    if status == 'in-use':
+        attachment = volume.get('attachments')[0]
+        data['attached_to'] = attachment.get('server_id')
+        data['attached_as_device'] = attachment.get('device')
+
+    return data
 
 
 def process_server_details(server):
