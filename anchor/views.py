@@ -51,7 +51,7 @@ class LookupView(FlaskView):
     @route('/servers/<task_id>')
     def gather_servers(self, task_id=None):
         if request.method == 'POST':
-            task = tasks.generate_account_server_list.delay(
+            task = tasks.generate_account_object_list.delay(
                 session.get('ddi'),
                 session.get('token'),
                 request.json.get('data_center'),
@@ -255,7 +255,7 @@ class AccountAPI(Resource):
                 401
             )
 
-        task_id = tasks.generate_account_server_list.delay(
+        task_id = tasks.generate_account_object_list.delay(
             account_id,
             token,
             region,
