@@ -305,30 +305,43 @@ def process_fg_server_details(server):
 
 
 @celery_app.task
-def generate_account_server_list(
+def generate_account_object_list(
     account_number,
     token,
     region,
     lookup_type,
     web=None
 ):
-    ng_servers = generate_server_list(account_number, token, region)
-    fg_servers = generate_first_gen_server_list(account_number, token, region)
-    servers = []
+    servers, volumes = [], []
     data = {
         'account_number': account_number,
         'region': region,
         'token': token
     }
-    if lookup_type == 'host_server':
-        servers, hosts = generate_host_and_server_data(ng_servers, fg_servers)
-        data['host_servers'] = hosts
+    if lookup_type in ['host_server', 'public_ip_zone']:
+        ng_servers = generate_server_list(account_number, token, region)
+        fg_servers = generate_first_gen_server_list(
+            account_number,
+            token,
+            region
+        )
+        if lookup_type == 'host_server':
+            servers, hosts = generate_host_and_server_data(
+                ng_servers,
+                fg_servers
+            )
+            data['host_servers'] = hosts
+        elif lookup_type == 'public_ip_zone':
+            servers, public_zones = generate_zone_and_server_data(ng_servers)
+            data['public_zones'] = public_zones
 
-    elif lookup_type == 'public_ip_zone':
-        servers, public_zones = generate_zone_and_server_data(ng_servers)
-        data['public_zones'] = public_zones
+        data['servers'] = servers
+    else:
+        volume_list = generate_volume_list(account_number, token, region)
+        volumes, hosts = generate_host_and_cbs_data(volume_list)
+        data['cbs_hosts'] = hosts
+        data['volumes'] = volumes
 
-    data['servers'] = servers
     data['lookup_type'] = lookup_type
     store_account = Account(data)
     db.accounts.update(
