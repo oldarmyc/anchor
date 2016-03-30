@@ -1,8 +1,10 @@
 {%- set lookup_type = data.get('lookup_type') %}
 <h2>
     {%- set title = unslug(lookup_type)|title %}
-    {% if title == 'Public Ip Zone' %}
-        {% set title = "Public IP Zone" %}
+    {%- if title == 'Public Ip Zone' %}
+        {%- set title = "Public IP Zone" %}
+    {% elif title == 'Cbs Host' %}
+        {%- set title = "CBS Host" %}
     {% endif -%}
     {{ data.get('region')|upper }} - {{ title }} Breakdown
     <button class="btn btn-default lookup-button" title="Change Datacenter">Change Data Center/Lookup</button>
@@ -10,7 +12,7 @@
         <button class="btn btn-info show-all" title="Show All Servers">Show All Servers</button>
     {% endif -%}
     {%- if task_id %}
-        <button class="btn btn-primary download-csv" data-task="{{ task_id }}" title="Download CSV">Download CSV</button>
+        <button class="btn btn-primary download-csv" data-task="{{ task_id }}" data-lookup="{{ lookup_type }}" title="Download CSV">Download CSV</button>
     {% endif -%}
 </h2>
 {%- if data.get('servers') and data.get('servers')|length > 0 %}
@@ -48,9 +50,24 @@
         {%- set servers = all_servers.get('fg') %}
         {%- include '_server_details.html' %}
     {% endif -%}
+{% elif data.get('volumes') and data.get('volumes')|length > 0 %}
+    {%- if mismatch %}
+        <div class="panel panel-danger" style="width: 50%;">
+            <div class="panel-body text-danger">
+    {% else %}
+        <div class="panel panel-success" style="width: 50%;">
+            <div class="panel-body text-success">
+    {% endif -%}
+            <div class="server-data"><span class="total-label">Total Volumes: </span>{{ data.get('volumes')|length }}</div>
+            <div class="server-data"><span class="total-label">Total Hosts: </span>{{ data.get('cbs_hosts')|length }}</div>
+        </div>
+    </div>
+    <h4>Volumes</h4>
+    {%- set all_volumes = get_formatted_volume_list(data) %}
+    {%- include '_cbs_details.html' %}
 {% else %}
     <div class="panel panel-warning" style="width: 50%;">
-        <div class="panel-body text-warning">You do not have any servers located in this datacenter, or no servers were returned with the query</div>
+        <div class="panel-body text-warning">You do not have any {% if lookup_type == 'cbs_host' %}volumes{% else %}servers{% endif %} located in this datacenter, or no servers were returned with the query</div>
     </div>
 {% endif -%}
 <script>
@@ -69,6 +86,7 @@
 
     $('.download-csv').click(function() {
         var task_id = $('.download-csv').data('task');
-        window.location = '/lookup/servers/' + task_id + '/csv';
+        var lookup_type = $('.download-csv').data('lookup');
+        window.location = '/lookup/servers/' + task_id + '/' + lookup_type + '/csv';
     });
 </script>
