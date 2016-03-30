@@ -92,22 +92,27 @@ class LookupView(FlaskView):
 
             return jsonify(state=status, code=500)
 
-    @route('/servers/<task_id>/csv')
-    def generate_server_csv(self, task_id):
+    @route('/servers/<task_id>/<lookup_type>/csv')
+    def generate_server_csv(self, task_id, lookup_type):
         status = tasks.check_task_state(task_id)
         if status == 'SUCCESS':
             account_id = tasks.get_task_results(task_id)
             account_data = g.db.accounts.find_one(
                 {'_id': ObjectId(account_id)}
             )
+            if lookup_type == 'cbs_host':
+                use_template = 'cbs.csv'
+            else:
+                use_template = 'servers.csv'
+
             template = render_template(
-                'servers.csv',
+                use_template,
                 data=account_data
             )
             response = make_response(template)
             response.headers['Content-Type'] = 'application/csv'
             response.headers['Content-Disposition'] = (
-                'attachment; filename="servers.csv"'
+                'attachment; filename="%s"' % use_template
             )
             return response
         else:
