@@ -58,8 +58,9 @@ class DCSelect(Form):
     lookup_type = fields.SelectField(
         'Breakdown:',
         choices=[
-            ('host_server', 'Host Server'),
-            ('public_ip_zone', 'Public IP Zone'),
+            ('host_server', 'Compute Hosts'),
+            ('public_ip_zone', 'Compute Zones'),
+            ('cbs_host', 'CBS Hosts'),
         ],
         default='host_server'
     )
