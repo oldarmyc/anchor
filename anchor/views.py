@@ -69,15 +69,22 @@ class LookupView(FlaskView):
                     {'_id': ObjectId(account_id)}
                 )
                 mismatch = False
-                if (
-                    account_data.get('lookup_type') == 'host_server' and
-                    len(account_data.get('servers')) !=
-                    len(account_data.get('host_servers'))
-                ):
-                    mismatch = True
+                if account_data.get('lookup_type') == 'host_server':
+                    if (
+                        len(account_data.get('servers')) !=
+                        len(account_data.get('host_servers'))
+                    ):
+                        mismatch = True
+
+                elif account_data.get('lookup_type') == 'cbs_host':
+                    if (
+                        len(account_data.get('volumes')) !=
+                        len(account_data.get('cbs_hosts'))
+                    ):
+                        mismatch = True
 
                 return render_template(
-                    '_server_breakdown.html',
+                    '_breakdown.html',
                     data=account_data,
                     mismatch=mismatch,
                     task_id=task_id
