@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from dateutil.parser import parse
+from dateutil import tz
 
 
 import helper
@@ -33,6 +34,7 @@ def utility_processor():
     def generate_server_age(data):
         duration = '-'
         create = parse(data)
+        create = create.replace(tzinfo=tz.tzutc())
         diff = helper.get_timestamp() - create
         if diff.days > 0:
             diff_str = re.sub('\sdays?,\s', ':', str(diff))
