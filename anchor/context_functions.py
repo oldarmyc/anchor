@@ -54,6 +54,9 @@ def utility_processor():
     def get_formatted_server_list(data):
         return helper.format_server_list_for_web(data)
 
+    def get_formatted_volume_list(data):
+        return helper.format_volume_list_for_web(data)
+
     def process_reboot_data(data):
         if data:
             temp = data.split(';')
@@ -69,6 +72,7 @@ def utility_processor():
         unslug=unslug,
         display_date=display_date,
         get_formatted_server_list=get_formatted_server_list,
+        get_formatted_volume_list=get_formatted_volume_list,
         generate_server_age=generate_server_age,
         process_reboot_data=process_reboot_data
     )
