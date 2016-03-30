@@ -70,6 +70,21 @@ def format_server_list_for_web(data):
     return send_data
 
 
+def format_volume_list_for_web(data):
+    send_data = {}
+    lookup = 'host'
+    for volume in data.get('volumes'):
+        temp = volume.get(lookup)
+        if not temp:
+            temp = 'unknown'
+        try:
+            send_data[temp].append(volume)
+        except:
+            send_data[temp] = [volume]
+
+    return send_data
+
+
 def generate_servers_on_same_host(account_id, region, host_id):
     data = g.db.accounts.aggregate(
         [
