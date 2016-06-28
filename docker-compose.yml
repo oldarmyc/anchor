@@ -1,0 +1,29 @@
+
+celery:
+  build: .
+  volumes:
+    - .:/anchor
+    - ~/Virtualenvs/anchor/anchor/anchor/config/config.py:/anchor/anchor/config/config.py:ro
+    - ~/Virtualenvs/anchor/anchor/anchor/config/celery.py:/anchor/anchor/config/celery.py:ro
+  links:
+    - db
+    - rabbitmq
+  command: celery -A anchor.tasks worker -l info
+
+app:
+  build: .
+  command: python runapp.py
+  ports:
+    - 5000:5000
+  volumes_from:
+    - celery
+  links:
+    - db
+    - celery
+    - rabbitmq
+
+db:
+  image: mongo
+
+rabbitmq:
+  image: rabbitmq:3
