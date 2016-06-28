@@ -3,8 +3,8 @@ celery:
   build: .
   volumes:
     - .:/anchor
-    - ~/Virtualenvs/anchor/anchor/anchor/config/config.py:/anchor/anchor/config/config.py:ro
-    - ~/Virtualenvs/anchor/anchor/anchor/config/celery.py:/anchor/anchor/config/celery.py:ro
+    - ./anchor/config/config.py:/anchor/anchor/config/config.py:ro
+    - ./anchor/config/celery.py:/anchor/anchor/config/celery.py:ro
   links:
     - db
     - rabbitmq
