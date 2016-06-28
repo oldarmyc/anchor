@@ -8,6 +8,6 @@ install:
   - pip install coverage flake8 mock funcsigs
 before_script:
   - cp anchor/config/config.example.py anchor/config/config.py
-  - cp anchor/config/celery-example.py anchor/config/celery.py
+  - cp anchor/config/celery.example.py anchor/config/celery.py
   - flake8 .
 script: nosetests -v --cover-erase --with-coverage --cover-package=anchor
