@@ -32,40 +32,40 @@ git clone https://github.com/oldarmyc/anchor.git
 cd anchor
 ```
 
-##### Config files setup
+#### Setup config files
 
-###### Copy over sample configs
+##### Copy over sample configs
 ````
 cp anchor/config/config.example.py anchor/config/config.py
 cp anchor/config/celery.example.py anchor/config/celery.py
 ````
 
-###### Edit the config.py file
+##### Edit the config.py file
 ```
 vim anchor/config/config.py
 ```
 
-###### Add import at top of file
+##### Add import at top of file
 ```python
 import os
 ```
 
-###### Change MONGO_HOST from localhost to the following:
+##### Change MONGO_HOST from localhost to the following:
 ```python
 MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
 ```
 
-###### Edit the celery.py file
+##### Edit the celery.py file
 ```
 vim anchor/config/celery.py
 ```
 
-###### Add import at top of file
+##### Add import at top of file
 ```python
 import os
 ```
 
-###### Change BROKER_URL and MONGO_HOST from localhost to the following:
+##### Change BROKER_URL and MONGO_HOST from localhost to the following:
 ```python
 BROKER_URL = 'amqp://{}'.format(
     os.environ['ANCHOR_RABBITMQ_1_PORT_5672_TCP_ADDR']
@@ -73,19 +73,19 @@ BROKER_URL = 'amqp://{}'.format(
 MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
 ```
 
-##### Build the docker images
+#### Build the docker images
 
-###### Start the build
+##### Start the build
 ```
 docker-compose build
 ```
 
-###### Bring the containers up and run in the background
+##### Bring the containers up and run in the background
 ```
 docker-compose up -d
 ```
 
-###### Verify that everything is running
+##### Verify that everything is running
 ```
 docker ps
 ```
