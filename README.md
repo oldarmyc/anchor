@@ -90,7 +90,7 @@ docker-compose up -d
 docker ps
 ```
 
-You should see four containers running named anchor_app, anchor_celery, mongo, and rabbitmq:3. If all four are running then you can browse to http://localhost:5000 to view the running application, and use it like the public version.
+You should see four containers running named anchor_app, anchor_celery, mongo, and rabbitmq:3. If all four are running then you can browse to `http://localhost:5000` to view the running application, and use it like the public version.
 
 If you want to view the container logs in-line just omit the -d flag and it will run in the current terminal window. To stop it in this mode just use CTRL-C. If running in detached mode you can use the command `docker logs CONTAINER_ID` to view the specific container log files.
 
