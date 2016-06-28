@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask, g
-from flask.ext.cloudadmin import Admin
-from flask.ext.cloudauth import CloudAuth
 from inspect import getmembers, isfunction
+from flask_cloudauth import CloudAuth
+from flask_cloudadmin import Admin
 from happymongo import HapPyMongo
 from datetime import timedelta
 from flask.ext import restful
+from flask import Flask, g
 from config import config
 
 

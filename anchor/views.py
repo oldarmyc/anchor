@@ -16,9 +16,9 @@ from flask import (
     g, render_template, request, redirect, url_for, flash, jsonify, session,
     make_response
 )
-from flask.ext.cloudadmin.decorators import check_perms
-from flask.ext.classy import FlaskView, route
-from flask.ext.restful import Resource
+from flask_cloudadmin.decorators import check_perms
+from flask_classy import FlaskView, route
+from flask_restful import Resource
 from bson.objectid import ObjectId
 from models import Region
 

@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import g
-from flask.ext.wtf import Form
 from wtforms import fields, validators
+from flask_wtf import Form
+from flask import g
 
 
 class DynamicSelectField(fields.SelectField):

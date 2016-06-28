@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from dateutil import tz
-from dateutil.relativedelta import relativedelta
 
 
 UTC = tz.tzutc()

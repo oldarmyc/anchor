@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from celery import Celery
-from models import Account
-from happymongo import HapPyMongo
 from celery.utils.log import get_task_logger
+from happymongo import HapPyMongo
+from models import Account
+from celery import Celery
 
 
 import config.celery as config
