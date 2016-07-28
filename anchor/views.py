@@ -107,6 +107,7 @@ class LookupView(FlaskView):
 
             template = render_template(
                 use_template,
+                lookup_type=lookup_type,
                 data=account_data
             )
             response = make_response(template)
