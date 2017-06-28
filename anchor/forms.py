@@ -38,7 +38,6 @@ class RegionSet(Form):
         validators=[validators.required()]
     )
     active = fields.BooleanField(default=True)
-    submit = fields.SubmitField()
 
     def validate_name(self, field):
         found_region = g.db.settings.find_one(

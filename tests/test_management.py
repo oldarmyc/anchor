@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from anchor import setup_application
+from anchor.config import config
 from uuid import uuid4
 
 
@@ -23,11 +24,15 @@ import re
 
 class AnchorTests(unittest.TestCase):
     def setUp(self):
-        self.app, self.db = setup_application.create_app('True')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        self.client = self.app.test_client()
-        self.client.get('/')
+        check_db = re.search('_test', config.MONGO_DATABASE)
+        if not check_db:
+            test_db = '%s_test' % config.MONGO_DATABASE
+        else:
+            test_db = config.MONGO_DATABASE
+
+        self.anchor, self.db = setup_application.create_app(test_db)
+        self.app = self.anchor.test_client()
+        self.app.get('/')
 
     def tearDown(self):
         self.db.sessions.remove()
@@ -36,7 +41,7 @@ class AnchorTests(unittest.TestCase):
 
     def setup_user_login(self, sess):
         sess['username'] = 'test'
-        sess['csrf_token'] = 'csrf_token'
+        sess['csrf_token'] = uuid4().hex
         sess['role'] = 'logged_in'
         sess['_permanent'] = True
         sess['ddi'] = '654846'
@@ -44,7 +49,7 @@ class AnchorTests(unittest.TestCase):
 
     def setup_admin_login(self, sess):
         sess['username'] = 'oldarmyc'
-        sess['csrf_token'] = 'csrf_token'
+        sess['csrf_token'] = uuid4().hex
         sess['role'] = 'administrators'
         sess['_permanent'] = True
         sess['ddi'] = '654846'
@@ -62,31 +67,18 @@ class AnchorTests(unittest.TestCase):
             }
         )
 
-    def retrieve_csrf_token(self, data, variable=None):
-        temp = re.search('id="csrf_token"(.+?)>', data)
-        token = None
+    def retrieve_csrf_token(self, data):
+        temp = re.search('id="csrf_token"(.+?)>', data.decode('utf-8'))
         if temp:
-            temp_token = re.search('value="(.+?)"', temp.group(1))
-            if temp_token:
-                token = temp_token.group(1)
-
-        if variable:
-            var_temp = re.search('id="variable_0-csrf_token"(.+?)>', data)
-            if var_temp:
-                var_token = re.search('value="(.+?)"', var_temp.group(1))
-                if var_token:
-                    return token, var_token.group(1)
-                else:
-                    return token, None
-            else:
-                return token, None
-        else:
-            return token
+            token = re.search('value="(.+?)"', temp.group(1))
+            if token:
+                return token.group(1)
+        return 'UNK'
 
     """ Datacenters Management - Perms Test """
 
     def test_item_manage_dcs_admin_perms(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -102,7 +94,7 @@ class AnchorTests(unittest.TestCase):
         )
 
     def test_item_manage_dcs_user_perms(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_user_login(sess)
 
@@ -122,7 +114,7 @@ class AnchorTests(unittest.TestCase):
     """ Functional Tests """
 
     def test_item_manage_dcs_add(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -153,7 +145,7 @@ class AnchorTests(unittest.TestCase):
 
     def test_item_manage_dcs_add_no_dcs(self):
         self.db.settings.update({}, {'$unset': {'regions': 1}})
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -183,7 +175,7 @@ class AnchorTests(unittest.TestCase):
         assert found_add, 'DC not found after add'
 
     def test_item_manage_dcs_add_dupe(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -219,7 +211,7 @@ class AnchorTests(unittest.TestCase):
         )
 
     def test_item_manage_dcs_add_bad_data(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -244,7 +236,7 @@ class AnchorTests(unittest.TestCase):
         )
 
     def test_item_manage_dcs_remove(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -272,7 +264,7 @@ class AnchorTests(unittest.TestCase):
         )
 
     def test_item_verbs_deactivate(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -307,7 +299,7 @@ class AnchorTests(unittest.TestCase):
                 }
             }
         )
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -332,7 +324,7 @@ class AnchorTests(unittest.TestCase):
         assert activated, 'Region was not activated'
 
     def test_item_bad_key_for_actions(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -360,7 +352,7 @@ class AnchorTests(unittest.TestCase):
         )
 
     def test_item_bad_action_for_actions(self):
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
@@ -389,7 +381,7 @@ class AnchorTests(unittest.TestCase):
 
     def test_item_bad_data_element_for_actions(self):
         before_settings = self.db.settings.find_one()
-        with self.app.test_client() as c:
+        with self.app as c:
             with c.session_transaction() as sess:
                 self.setup_admin_login(sess)
 
