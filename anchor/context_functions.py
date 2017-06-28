@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from dateutil.parser import parse
+from datetime import timedelta
 from dateutil import tz
 
 
@@ -68,11 +69,15 @@ def utility_processor():
             return ' - '.join(dates)
         return '-'
 
+    def get_created_date(cache_date):
+        return (cache_date - timedelta(days=1)).strftime('%m-%d-%Y')
+
     return dict(
         unslug=unslug,
         display_date=display_date,
         get_formatted_server_list=get_formatted_server_list,
         get_formatted_volume_list=get_formatted_volume_list,
         generate_server_age=generate_server_age,
-        process_reboot_data=process_reboot_data
+        process_reboot_data=process_reboot_data,
+        get_created_date=get_created_date
     )

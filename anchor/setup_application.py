@@ -62,6 +62,7 @@ def create_app(db_name=None):
     views.BaseView.register(app)
     views.LookupView.register(app)
     views.ManagementView.register(app)
+    views.ReportView.register(app)
 
     api.add_resource(
         views.AccountAPI,

@@ -1,0 +1,103 @@
+{% extends "_base.html" %}
+{% block title %}Reports{% endblock %}
+{% block addHeaders %}
+<style>
+    .account-counts {
+        width: 600px;
+    }
+
+    .count-label, .count-value {
+        font-size: 14px;
+    }
+
+    .count-value {
+        font-weight: 500;
+    }
+
+    .count-label {
+        font-weight: bold;
+        margin-right: 5px;
+        color: #31708f;
+    }
+</style>
+{% endblock %}
+{% block body %}
+    <h2>
+        Reporting Application Runs
+        <button class="btn btn-default all-show active">All</button>
+        <button class="btn btn-default show-cbs">CBS Host</button>
+        <button class="btn btn-default show-host-server">Host Server</button>
+        <button class="btn btn-default show-public-ip">Public IP Zone</button>
+    </h2>
+    {%- if accounts.count() > 0 %}
+        <div class="panel panel-primary account-counts">
+            <div class="panel-body text-default">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="count-label">CBS Host:</span><span class="count-value">{{ cbs_runs.count() }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="count-label">Host Servers:</span><span class="count-value">{{ host_servers.count() }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="count-label">Public IP Zone:</span><span class="count-value">{{ public_zone.count() }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dynamic-content">
+            {% include 'reports/_account_runs.html' %}
+        </div>
+    {% else %}
+        <div class="panel panel-warning" style="width: 50%;">
+            <div class="panel-body text-warning">No lookups have been run on the system</div>
+        </div>
+    {% endif -%}
+{% endblock %}
+{% block jquery %}
+    <script>
+        $('.show-cbs').on('click', function() {
+            $('.host_server').hide();
+            $('.public_ip_zone').hide();
+            $('.cbs_host').show();
+
+            $('.all-show').removeClass('active');
+            $('.show-host-server').removeClass('active');
+            $('.public_ip_zone').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        $('.show-host-server').on('click', function() {
+            $('.cbs_host').hide();
+            $('.public_ip_zone').hide();
+            $('.host_server').show();
+
+            $('.all-show').removeClass('active');
+            $('.show-cbs').removeClass('active');
+            $('.public_ip_zone').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        $('.show-public-ip').on('click', function() {
+            $('.cbs_host').hide();
+            $('.host_server').hide();
+            $('.public_ip_zone').show();
+
+            $('.all-show').removeClass('active');
+            $('.show-host-server').removeClass('active');
+            $('.show-cbs').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        $('.all-show').on('click', function() {
+            $('.host_server').show();
+            $('.cbs_host').show();
+            $('.public_ip_zone').show();
+
+            $('.show-cbs').removeClass('active');
+            $('.show-host-server').removeClass('active');
+            $('.public_ip_zone').removeClass('active');
+            $(this).addClass('active');
+        });
+    </script>
+{% endblock %}

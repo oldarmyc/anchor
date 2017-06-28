@@ -26,6 +26,7 @@ from models import Region
 import forms
 import tasks
 import helper
+import pymongo
 
 
 class BaseView(FlaskView):
@@ -122,6 +123,26 @@ class LookupView(FlaskView):
                 'warning'
             )
             return redirect(url_for('BaseView:index'))
+
+
+class ReportView(FlaskView):
+    route_base = '/reports'
+    decorators = [check_perms(request)]
+
+    def get(self):
+        accounts = g.db.accounts.find().sort(
+            [('cache_expiration', pymongo.DESCENDING)]
+        )
+        cbs_runs = g.db.accounts.find({'lookup_type': 'cbs_host'})
+        host_servers = g.db.accounts.find({'lookup_type': 'host_server'})
+        public_zone = g.db.accounts.find({'lookup_type': 'public_ip_zone'})
+        return render_template(
+            'reports/reports.html',
+            accounts=accounts,
+            cbs_runs=cbs_runs,
+            host_servers=host_servers,
+            public_zone=public_zone
+        )
 
 
 class ManagementView(FlaskView):

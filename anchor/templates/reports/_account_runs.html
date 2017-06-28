@@ -1,0 +1,28 @@
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>DDI</th>
+            <th>Region</th>
+            <th>Lookup</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%- for account in accounts %}
+            <tr {% if account.get('lookup_type') != None %}class="{{ account.get('lookup_type') }}"{% endif -%}>
+                <td>
+                    {{ account.get('account_number') }}
+                </td>
+                <td>
+                    {{ account.get('region')|upper }}
+                </td>
+                <td>
+                    {{ account.get('lookup_type') }}
+                </td>
+                <td>
+                    {{ get_created_date(account.get('cache_expiration')) }}
+                </td>
+            </tr>
+        {% endfor -%}
+    </tbody>
+</table>
