@@ -1,7 +1,8 @@
 
 FROM python:2.7
 
-MAINTAINER Dave Kludt
+LABEL vendor="Rackspace, Inc" \
+      maintainer="Dave Kludt"
 
 ADD . /anchor
 WORKDIR /anchor
