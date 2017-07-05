@@ -17,13 +17,13 @@ from flask_cloudauth import CloudAuth
 from flask_cloudadmin import Admin
 from happymongo import HapPyMongo
 from datetime import timedelta
-from flask.ext import restful
 from flask import Flask, g
 from config import config
 
 
 import context_functions
 import template_filters
+import flask_restful
 import defaults
 import logging
 import views
@@ -37,7 +37,7 @@ def create_app(db_name=None):
 
     Admin(app)
     mongo, db = HapPyMongo(config)
-    api = restful.Api(app)
+    api = flask_restful.Api(app)
     app.permanent_session_lifetime = timedelta(hours=2)
     auth = CloudAuth(app, db)
 
