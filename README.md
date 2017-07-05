@@ -10,8 +10,6 @@ In addition you can utilize an API to ask whether the new server that has just b
 
 To view the API documentation you can visit [https://anchor.readthedocs.org](https://anchor.readthedocs.org)
 
-View the public version at [https://anchor.cloudapi.co](https://anchor.cloudapi.co "Anchor Application")
-
 #### Authentication
 
 To use the application just login with your username and Cloud Account API key. The application does not store the API key and keeps no record of it. It only uses the API key to make the authentication call so that the application can generate the token. The token is then used in subsequent API calls, and is kept as long as there is a session. A logout will clear the session of any data, or when the token expires whichever comes first.
@@ -20,7 +18,7 @@ To use the application just login with your username and Cloud Account API key. 
 
 ___
 
-#### Want to run it locally?
+#### Running it locally?
 All you need is docker installed along with docker-compose
 
 [View Docker Installation Docs](https://docs.docker.com/engine/installation/ 'Install Docker')
