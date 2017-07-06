@@ -38,38 +38,7 @@ cp anchor/config/config.example.py anchor/config/config.py
 cp anchor/config/celery.example.py anchor/config/celery.py
 ````
 
-##### Edit the config.py file
-```
-vim anchor/config/config.py
-```
-
-##### Add import at top of file
-```python
-import os
-```
-
-##### Change MONGO_HOST from localhost to the following:
-```python
-MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
-```
-
-##### Edit the celery.py file
-```
-vim anchor/config/celery.py
-```
-
-##### Add import at top of file
-```python
-import os
-```
-
-##### Change BROKER_URL and MONGO_HOST from localhost to the following:
-```python
-BROKER_URL = 'amqp://{}'.format(
-    os.environ['ANCHOR_RABBITMQ_1_PORT_5672_TCP_ADDR']
-)
-MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
-```
+Change the appropriate values in each of the config files. Currently the sample configs are setup for running everything in Docker or localhost but can be changed depending on the environment.
 
 #### Build the docker images
 
@@ -88,7 +57,7 @@ docker-compose up -d
 docker ps
 ```
 
-You should see four containers running named anchor_app, anchor_celery, mongo, and rabbitmq:3. If all four are running then you can browse to `http://localhost:5000` to view the running application, and use it like the public version.
+You should see four containers running named anchor_app, anchor_celery, mongo, and rabbitmq:3. If all four are running then you can browse to `http://localhost:5000` to view the running application.
 
 If you want to view the container logs in-line just omit the -d flag and it will run in the current terminal window. To stop it in this mode just use CTRL-C. If running in detached mode you can use the command `docker logs CONTAINER_ID` to view the specific container log files.
 
