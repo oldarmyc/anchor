@@ -13,20 +13,21 @@
 # limitations under the License.
 
 """
-    If you are running the application within docker using the provided
-    Dockerfile and docker-compose then you will need to change the BROKER_URL
-    and the MONGO_HOST option to the following:
+    The values are set to run the application either on localhost or
+    within docker using docker-compose. If you would like to run it
+    a different waay fell free to change the appropriate values.
+"""
 
-    import os
+import os
 
+
+try:
     BROKER_URL = 'amqp://{}'.format(
         os.environ['ANCHOR_RABBITMQ_1_PORT_5672_TCP_ADDR']
     )
-    MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
+except:
+    BROKER_URL = 'amqp://localhost'
 
-"""
-
-BROKER_URL = 'amqp://'
 CELERY_RESULT_BACKEND = 'amqp'
 CELERY_TASK_RESULT_EXPIRES = 300
 CELERY_RESULT_PERSISTENT = True
@@ -35,8 +36,11 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+try:
+    MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
+except:
+    MONGO_HOST = localhost
 
-MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
 MONGO_USER = None
 MONGO_PASS = None

@@ -13,17 +13,19 @@
 # limitations under the License.
 
 """
-    If you are running the application within docker using the provided
-    Dockerfile and docker-compose then you will need to change the MONGO_HOST
-    option to use the correct container.
-
-    import os
-
-    MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
-
+    The values are set to run the application either on localhost or
+    within docker using docker-compose. If you would like to run it
+    a different waay fell free to change the appropriate values.
 """
 
-MONGO_HOST = 'localhost'
+import os
+
+
+try:
+    MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
+except:
+    MONGO_HOST = localhost
+
 MONGO_PORT = 27017
 MONGO_KWARGS = {'tz_aware': True}
 MONGO_DATABASE = 'anchor'
