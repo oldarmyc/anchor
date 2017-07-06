@@ -24,7 +24,7 @@ import os
 try:
     MONGO_HOST = os.environ['ANCHOR_DB_1_PORT_27017_TCP_ADDR']
 except:
-    MONGO_HOST = localhost
+    MONGO_HOST = 'localhost'
 
 MONGO_PORT = 27017
 MONGO_KWARGS = {'tz_aware': True}
