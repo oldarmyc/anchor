@@ -36,7 +36,7 @@ def application_initialize(db, app):
                         '<p class="lead">Anchor - Server Host Distribution</p>'
                         '<div>For improvements or suggestions '
                         'please go to GitHub and submit an '
-                        '<a href="https://github.com/rackerlabs/'
+                        '<a href="https://github.com/oldarmyc/'
                         'anchor/issues/new" class="tooltip-title" target="'
                         '_blank" title="Submit a GitHub issue">issue</a>'
                         '</div><div id="issue_feedback"></div>'
@@ -44,7 +44,7 @@ def application_initialize(db, app):
                     'app_footer': (
                         'This site is not officially supported by Rackspace. '
                         'Source is available on <a href="https://github.com/'
-                        'rackerlabs/anchor/" class="tooltip-title" '
+                        'oldarmyc/anchor/" class="tooltip-title" '
                         'target="_blank" title="Anchor Repository">github</a>'
                     ),
                     'admins': [
