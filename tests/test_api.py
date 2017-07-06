@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from dateutil.relativedelta import relativedelta
 from anchor import setup_application
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from uuid import uuid4
 
 
