@@ -27,7 +27,7 @@ app:
   build: .
   command: python runapp.py
   ports:
-    - 5000:5000
+    - 127.0.0.1:5000:5000
   volumes_from:
     - celery
   links:
@@ -39,4 +39,4 @@ db:
   image: mongo
 
 rabbitmq:
-  image: rabbitmq:3
+  image: rabbitmq
