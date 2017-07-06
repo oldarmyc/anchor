@@ -18,7 +18,7 @@ To use the application just login with your username and Cloud Account API key. 
 
 ___
 
-#### Running it locally?
+#### Running it in docker?
 All you need is docker installed along with docker-compose
 
 [View Docker Installation Docs](https://docs.docker.com/engine/installation/ 'Install Docker')
@@ -64,4 +64,59 @@ If you want to view the container logs in-line just omit the -d flag and it will
 If in detached mode you can use the following command to stop the containers.
 ```
 docker-compose stop
+```
+___
+
+#### Running it locally?
+
+##### Setup working directory
+```
+mkdir anchor
+git clone https://github.com/oldarmyc/anchor.git
+cd anchor
+```
+
+#### Setup config files
+
+##### Copy over sample configs
+````
+cp anchor/config/config.example.py anchor/config/config.py
+cp anchor/config/celery.example.py anchor/config/celery.py
+````
+
+Change the appropriate values in each of the config files. You will need a rabbitmq server and a mongo server to run locally. These can both be run in docker without issues to avoid having to install both services, but will need to be accessible from localhost.
+
+RabbitMQ docker example run command
+```
+docker run --name rabbit-dev -p "15672:15672" -p "5672:5672" -p "4369:4369" -p "5671:5671" -p "25672:25672" -d rabbitmq
+```
+
+MongoDB docker example run command
+```
+docker run --name mongo-dev -p "27017:27017" -d mongo
+```
+
+##### Install packages
+Install base packages needed for the application
+```
+pip install -r requirements.txt
+```
+
+##### Starting the application
+```
+python runapp.py
+```
+
+___
+
+#### Running Tests
+
+##### Ensure you have the testing requirements installed
+```
+pip install -r dev-requirements.txt
+```
+
+##### Running tests with coverage report
+```
+nosetests --with-coverage --cover-erase --cover-package anchor
 ```
